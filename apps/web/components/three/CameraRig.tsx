@@ -6,6 +6,7 @@ import { OrbitControls } from '@react-three/drei'
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
 import { useWorld } from '@/stores/world'
 import { useConfigurator } from '@/stores/configurator'
+import { InteriorCam } from './InteriorCam'
 
 const ORBIT_POS: [number, number, number] = [14, 11, 14]
 const TOPDOWN_POS: [number, number, number] = [0, 30, 0.01]
@@ -37,6 +38,8 @@ export function CameraRig() {
     camera.position.y = 9 + Math.sin(cinematicAngle.current * 0.5) * 2
     camera.lookAt(0, 1, 0)
   })
+
+  if (cameraMode === 'interior') return <InteriorCam />
 
   const orbitEnabled = cameraMode === 'orbit' && !draggingId
 

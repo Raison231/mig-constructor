@@ -7,10 +7,10 @@ import { t } from '@mig/i18n'
 
 const WEATHERS: Weather[] = ['clear', 'rain', 'snow', 'fog']
 const SITES: Site[] = ['tbilisi', 'bakuriani', 'kakheti', 'adjara']
-const CAMERAS: CameraMode[] = ['orbit', 'topdown', 'cinematic']
+const CAMERAS: CameraMode[] = ['orbit', 'topdown', 'cinematic', 'interior']
 
 const WEATHER_ICON: Record<Weather, string> = { clear: '☀️', rain: '🌧', snow: '❄️', fog: '🌫' }
-const CAMERA_ICON: Record<CameraMode, string> = { orbit: '🎥', topdown: '🛰', cinematic: '🏞' }
+const CAMERA_ICON: Record<CameraMode, string> = { orbit: '🎥', topdown: '🛰', cinematic: '🏞', interior: '🚪' }
 
 function hourLabel(h: number) {
   const hh = Math.floor(h)
@@ -34,9 +34,7 @@ export function WorldPanel() {
   return (
     <div className="glass rounded-2xl p-3 space-y-3">
       <div className="flex items-center justify-between">
-        <h2 className="font-mono text-xs uppercase tracking-wider text-fg-secondary">
-          {t('world.title', locale)}
-        </h2>
+        <h2 className="font-mono text-xs uppercase tracking-wider text-fg-secondary">{t('world.title', locale)}</h2>
         <span className="text-[10px] text-fg-secondary">{hourLabel(hour)} · {temp}°C</span>
       </div>
 
@@ -86,17 +84,23 @@ export function WorldPanel() {
 
       <div>
         <div className="mb-1 text-[10px] text-fg-secondary">{t('world.camera', locale)}</div>
-        <div className="grid grid-cols-3 gap-1">
+        <div className="grid grid-cols-4 gap-1">
           {CAMERAS.map((c) => (
             <button
               key={c}
               onClick={() => setCameraMode(c)}
               className={`rounded-md py-1 text-[10px] ${cameraMode === c ? 'bg-accent-green text-bg' : 'bg-bg hover:bg-panel'}`}
+              title={t(`camera.${c}`, locale)}
             >
-              <span className="mr-1">{CAMERA_ICON[c]}</span>{t(`camera.${c}`, locale)}
+              {CAMERA_ICON[c]}
             </button>
           ))}
         </div>
+        {cameraMode === 'interior' && (
+          <div className="mt-1 text-[9px] text-fg-secondary leading-tight">
+            {t('camera.interiorHint', locale)}
+          </div>
+        )}
       </div>
     </div>
   )
