@@ -1,30 +1,55 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { ModulePanel } from '@/components/configurator/ModulePanel'
 import { PricePanel } from '@/components/configurator/PricePanel'
 import { Timeline } from '@/components/configurator/Timeline'
 import { SelectionPanel } from '@/components/configurator/SelectionPanel'
 import { KeyboardHelp } from '@/components/configurator/KeyboardHelp'
+import { Header } from '@/components/header/Header'
 import { useConfigurator } from '@/stores/configurator'
+import { useLocale } from '@/stores/locale'
+import { t } from '@mig/i18n'
+import { decodeLayout, encodeLayout } from '@/lib/url-state'
 
 const Scene = dynamic(() => import('@/components/three/Scene').then((m) => m.Scene), {
   ssr: false,
-  loading: () => (
-    <div className="absolute inset-0 flex items-center justify-center text-fg-secondary">
-      Загружаем сцену…
-    </div>
-  ),
+  loading: () => null,
 })
 
 export default function HomePage() {
   const selectionId = useConfigurator((s) => s.selectionId)
+  const modules = useConfigurator((s) => s.modules)
+  const setLayout = useConfigurator((s) => s.setLayout)
   const rotate = useConfigurator((s) => s.rotateSelected)
   const duplicate = useConfigurator((s) => s.duplicateSelected)
   const remove = useConfigurator((s) => s.removeSelected)
   const undo = useConfigurator((s) => s.undo)
   const redo = useConfigurator((s) => s.redo)
+  const locale = useLocale((s) => s.locale)
+  const hydratedRef = useRef(false)
+
+  useEffect(() => {
+    if (hydratedRef.current) return
+    hydratedRef.current = true
+    if (typeof window === 'undefined') return
+    const hash = window.location.hash.replace(/^#layout=/, '')
+    if (hash) {
+      const parsed = decodeLayout(hash)
+      if (parsed && parsed.length > 0) setLayout(parsed)
+    }
+  }, [setLayout])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (modules.length === 0) {
+      if (window.location.hash) history.replaceState(null, '', window.location.pathname)
+      return
+    }
+    const h = encodeLayout(modules)
+    history.replaceState(null, '', `#layout=${h}`)
+  }, [modules])
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -46,21 +71,7 @@ export default function HomePage() {
   return (
     <main className="relative h-screen w-screen overflow-hidden bg-bg">
       <Scene />
-
-      <header className="pointer-events-none absolute left-0 right-0 top-0 z-10 flex items-center justify-between p-6">
-        <div className="pointer-events-auto flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-accent-green" />
-          <span className="font-mono text-sm font-semibold tracking-tight">MIG.CONSTRUCTOR</span>
-          <span className="ml-2 rounded-md bg-panel px-2 py-0.5 text-xs text-fg-secondary">
-            v0.2 · Wave 2
-          </span>
-        </div>
-        <div className="pointer-events-auto flex gap-2 text-xs text-fg-secondary">
-          <button className="glass rounded-lg px-3 py-1.5">RU</button>
-          <button className="glass rounded-lg px-3 py-1.5">EN</button>
-          <button className="glass rounded-lg px-3 py-1.5">KA</button>
-        </div>
-      </header>
+      <Header />
 
       <div className="pointer-events-none absolute inset-0 z-10">
         <div className="pointer-events-auto absolute left-6 top-24 bottom-24 w-72">
@@ -77,6 +88,10 @@ export default function HomePage() {
           <KeyboardHelp />
         </div>
       </div>
+
+      <noscript className="absolute inset-0 flex items-center justify-center text-fg">
+        {t('loading.scene', locale)}
+      </noscript>
     </main>
   )
 }

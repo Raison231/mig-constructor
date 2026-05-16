@@ -1,69 +1,51 @@
 'use client'
 
-import { useConfigurator } from '@/stores/configurator'
-import { calculatePrice } from '@mig/pricing-engine'
 import { useMemo } from 'react'
+import { useConfigurator } from '@/stores/configurator'
+import { useLocale } from '@/stores/locale'
+import { calculatePrice } from '@mig/pricing-engine'
+import { t } from '@mig/i18n'
+
+const USD_RATE = 0.37
 
 export function PricePanel() {
   const modules = useConfigurator((s) => s.modules)
-  const removeModule = useConfigurator((s) => s.removeModule)
-
+  const locale = useLocale((s) => s.locale)
   const breakdown = useMemo(() => calculatePrice(modules), [modules])
+
+  const fmt = (n: number) => `${n.toLocaleString()} GEL`
+  const fmtUsd = (n: number) => `≈ $${Math.round(n * USD_RATE).toLocaleString()}`
 
   return (
     <div className="glass rounded-2xl p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="font-mono text-xs uppercase tracking-wider text-fg-secondary">Estimate</h2>
-        <span className="text-xs text-fg-secondary">{modules.length} modules</span>
+        <h2 className="font-mono text-xs uppercase tracking-wider text-fg-secondary">{t('panel.price', locale)}</h2>
+        <span className="text-[10px] text-fg-secondary">{modules.length} mod.</span>
       </div>
 
-      <div className="mb-4 space-y-1 text-sm">
-        <Row label="Modules" value={breakdown.modulesCost} />
-        <Row label="Delivery (GE)" value={breakdown.deliveryCost} />
-        <Row label="Earthworks" value={breakdown.earthworksCost} />
-        <Row label="Assembly" value={breakdown.assemblyCost} />
+      <div className="space-y-1 text-xs">
+        <Row label={t('price.modules', locale)} value={fmt(breakdown.modules)} />
+        <Row label={t('price.delivery', locale)} value={fmt(breakdown.delivery)} />
+        <Row label={t('price.earthworks', locale)} value={fmt(breakdown.earthworks)} />
+        <Row label={t('price.assembly', locale)} value={fmt(breakdown.assembly)} />
       </div>
 
-      <div className="mb-4 flex items-end justify-between border-t border-white/5 pt-3">
-        <div>
-          <div className="text-xs text-fg-secondary">Total turnkey</div>
-          <div className="font-mono text-3xl font-bold text-accent-green">
-            ${breakdown.total.toLocaleString('en-US')}
-          </div>
+      <div className="mt-3 border-t border-panel pt-3">
+        <div className="flex items-baseline justify-between">
+          <span className="text-xs text-fg-secondary">{t('price.total', locale)}</span>
+          <span className="text-xl font-semibold text-accent-green">{fmt(breakdown.total)}</span>
         </div>
-        <div className="text-right text-xs">
-          <div className="text-fg-secondary">≈ {breakdown.weeks} weeks</div>
-          <div className="text-fg-secondary">{breakdown.totalAreaM2} m²</div>
-        </div>
+        <div className="mt-0.5 text-right text-[10px] text-fg-secondary">{fmtUsd(breakdown.total)}</div>
       </div>
-
-      {modules.length > 0 && (
-        <div className="max-h-48 space-y-1 overflow-y-auto pr-1">
-          {modules.map((m) => (
-            <div
-              key={m.instanceId}
-              className="flex items-center justify-between rounded-lg bg-bg px-2.5 py-1.5 text-xs"
-            >
-              <span>{m.moduleId}</span>
-              <button
-                onClick={() => removeModule(m.instanceId)}
-                className="text-fg-secondary hover:text-accent-orange"
-              >
-                ✕
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   )
 }
 
-function Row({ label, value }: { label: string; value: number }) {
+function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between">
       <span className="text-fg-secondary">{label}</span>
-      <span className="font-mono">${value.toLocaleString('en-US')}</span>
+      <span>{value}</span>
     </div>
   )
 }
