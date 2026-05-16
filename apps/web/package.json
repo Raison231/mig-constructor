@@ -12,6 +12,7 @@
     "clean": "rm -rf .next .turbo"
   },
   "dependencies": {
+    "@mig/i18n": "workspace:*",
     "@mig/modules-schema": "workspace:*",
     "@mig/pricing-engine": "workspace:*",
     "@mig/three-utils": "workspace:*",

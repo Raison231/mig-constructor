@@ -13,20 +13,22 @@ export function Module3D({ instance }: { instance: ModuleInstance }) {
   const def = useMemo(() => modules.find((m) => m.id === instance.moduleId), [instance.moduleId])
   const selectionId = useConfigurator((s) => s.selectionId)
   const select = useConfigurator((s) => s.select)
+  const setDragging = useConfigurator((s) => s.setDragging)
 
   if (!def) return null
-
   const Visual = moduleComponents[def.id]
   const { w, h, d } = moduleDims(def.area_m2, instance.material)
   const isSelected = selectionId === instance.instanceId
+  const rotationVec: [number, number, number] = [0, instance.rotationY, 0]
 
   return (
     <group
       position={instance.position}
-      rotation={[0, instance.rotationY, 0]}
+      rotation={rotationVec}
       onPointerDown={(e) => {
         e.stopPropagation()
         select(instance.instanceId)
+        setDragging(instance.instanceId)
       }}
     >
       {Visual ? <Visual material={instance.material} w={w} h={h} d={d} /> : null}

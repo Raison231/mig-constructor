@@ -1,10 +1,14 @@
 'use client'
 
+const ROTATION: [number, number, number] = [-Math.PI / 2, 0, 0]
+const POSITION: [number, number, number] = [0, 0, 0]
+const PLANE_ARGS: [number, number] = [100, 100]
+
 export function Ground() {
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
-      <planeGeometry args={[200, 200]} />
-      <meshStandardMaterial color="#0d2f1c" roughness={1} />
+    <mesh receiveShadow rotation={ROTATION} position={POSITION}>
+      <planeGeometry args={PLANE_ARGS} />
+      <meshStandardMaterial color="#0d2f1c" roughness={0.95} metalness={0} />
     </mesh>
   )
 }

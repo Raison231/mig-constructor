@@ -1,82 +1,79 @@
 'use client'
 
 import { useState } from 'react'
-import { modules, type Material } from '@mig/modules-schema'
+import { modules } from '@mig/modules-schema'
+import type { Material } from '@mig/modules-schema'
 import { useConfigurator } from '@/stores/configurator'
-import clsx from 'clsx'
+import { useLocale } from '@/stores/locale'
+import { t, pickName } from '@mig/i18n'
 
-const CATEGORIES = ['core', 'wet', 'leisure', 'utility', 'roof', 'cellar', 'exterior'] as const
+const MAT_KEY: Record<Material, string> = {
+  container: 'mat.container', timber: 'mat.timber', hybrid: 'mat.hybrid',
+}
+const MATERIALS_F: Array<Material | 'any'> = ['any', 'container', 'timber', 'hybrid']
+const MATERIALS_C: Material[] = ['container', 'timber', 'hybrid']
 
 export function ModulePanel() {
-  const [material, setMaterial] = useState<Material>('container')
-  const [category, setCategory] = useState<(typeof CATEGORIES)[number] | 'all'>('all')
+  const [matFilter, setMatFilter] = useState<Material | 'any'>('any')
+  const [matChoice, setMatChoice] = useState<Material>('container')
   const addModule = useConfigurator((s) => s.addModule)
+  const locale = useLocale((s) => s.locale)
 
-  const visible = modules.filter(
-    (m) =>
-      m.materials.includes(material) && (category === 'all' || m.category === category),
-  )
+  const filtered = matFilter === 'any'
+    ? modules
+    : modules.filter((m) => m.prices && (m.prices as Record<string, number>)[matFilter] != null)
 
   return (
     <div className="glass flex h-full flex-col rounded-2xl p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="font-mono text-xs uppercase tracking-wider text-fg-secondary">Modules</h2>
-        <span className="text-xs text-fg-secondary">{visible.length}</span>
+        <h2 className="font-mono text-xs uppercase tracking-wider text-fg-secondary">{t('panel.modules', locale)}</h2>
+        <span className="text-[10px] text-fg-secondary">{filtered.length}</span>
       </div>
 
-      <div className="mb-3 grid grid-cols-3 gap-1 rounded-lg bg-bg p-1">
-        {(['container', 'timber', 'hybrid'] as Material[]).map((m) => (
+      <div className="mb-3 grid grid-cols-4 gap-1">
+        {MATERIALS_F.map((m) => (
           <button
             key={m}
-            onClick={() => setMaterial(m)}
-            className={clsx(
-              'rounded-md px-2 py-1.5 text-xs capitalize transition-colors',
-              material === m ? 'bg-panel text-fg' : 'text-fg-secondary hover:text-fg',
-            )}
+            onClick={() => setMatFilter(m)}
+            className={`rounded-md px-2 py-1 text-[10px] ${matFilter === m ? 'bg-accent-green text-bg' : 'bg-bg text-fg-secondary hover:bg-panel'}`}
           >
-            {m === 'container' ? '📦' : m === 'timber' ? '🌲' : '⚡️'} {m}
+            {m === 'any' ? t('mat.any', locale) : t(MAT_KEY[m], locale)}
           </button>
         ))}
       </div>
 
-      <div className="mb-3 flex flex-wrap gap-1">
-        <button
-          onClick={() => setCategory('all')}
-          className={clsx(
-            'rounded-md px-2 py-1 text-xs',
-            category === 'all' ? 'bg-accent-green text-bg' : 'bg-bg text-fg-secondary',
-          )}
-        >
-          all
-        </button>
-        {CATEGORIES.map((c) => (
+      <div className="mb-3 flex gap-1 rounded-lg bg-bg p-1">
+        {MATERIALS_C.map((m) => (
           <button
-            key={c}
-            onClick={() => setCategory(c)}
-            className={clsx(
-              'rounded-md px-2 py-1 text-xs',
-              category === c ? 'bg-accent-green text-bg' : 'bg-bg text-fg-secondary',
-            )}
+            key={m}
+            onClick={() => setMatChoice(m)}
+            className={`flex-1 rounded-md px-2 py-1 text-[10px] ${matChoice === m ? 'bg-panel text-fg' : 'text-fg-secondary'}`}
           >
-            {c}
+            {t(MAT_KEY[m], locale)}
           </button>
         ))}
       </div>
 
-      <div className="flex-1 space-y-1.5 overflow-y-auto pr-1">
-        {visible.map((m) => (
-          <button
-            key={m.id}
-            onClick={() => addModule(m.id, material)}
-            className="flex w-full items-center justify-between rounded-lg bg-bg p-2.5 text-left hover:bg-panel"
-          >
-            <div>
-              <div className="text-sm font-medium">{m.name.ru}</div>
-              <div className="text-[11px] text-fg-secondary">{m.area_m2} m² · {m.category}</div>
-            </div>
-            <div className="font-mono text-xs text-accent-green">+</div>
-          </button>
-        ))}
+      <div className="flex-1 space-y-1 overflow-y-auto pr-1">
+        {filtered.map((m) => {
+          const prices = m.prices as Record<string, number> | undefined
+          const price = prices?.[matChoice]
+          return (
+            <button
+              key={m.id}
+              onClick={() => addModule(m.id, matChoice)}
+              className="w-full rounded-lg bg-bg p-2 text-left text-sm transition hover:bg-panel"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <div className="truncate">{pickName(m.name, locale)}</div>
+                <div className="shrink-0 text-[11px] text-fg-secondary">{m.area_m2}m²</div>
+              </div>
+              <div className="mt-0.5 text-[10px] text-fg-secondary">
+                {price != null ? `${price.toLocaleString()} GEL` : '—'}
+              </div>
+            </button>
+          )
+        })}
       </div>
     </div>
   )
