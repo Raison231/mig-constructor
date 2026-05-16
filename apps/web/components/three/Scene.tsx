@@ -8,27 +8,29 @@ import { Ground } from './Ground'
 
 export function Scene() {
   const modules = useConfigurator((s) => s.modules)
+  const deselect = useConfigurator((s) => s.deselect)
 
   return (
     <Canvas
       shadows
       dpr={[1, 2]}
-      camera= position: [12, 10, 12], fov: 35 
-      gl= antialias: true, powerPreference: 'high-performance' 
+      camera= fov: 50, position: [14, 11, 14], near: 0.1, far: 200 
+      gl= antialias: true, alpha: false, powerPreference: 'high-performance' 
+      onPointerMissed={() => deselect()}
     >
       <color attach="background" args={['#0A0A0B']} />
-      <fog attach="fog" args={['#0A0A0B', 30, 80]} />
+      <fog attach="fog" args={['#0A0A0B', 30, 90]} />
 
-      <ambientLight intensity={0.3} />
+      <ambientLight intensity={0.35} />
       <directionalLight
         position={[10, 20, 5]}
-        intensity={1.2}
+        intensity={1.3}
         castShadow
         shadow-mapSize={[2048, 2048]}
-        shadow-camera-left={-20}
-        shadow-camera-right={20}
-        shadow-camera-top={20}
-        shadow-camera-bottom={-20}
+        shadow-camera-left={-25}
+        shadow-camera-right={25}
+        shadow-camera-top={25}
+        shadow-camera-bottom={-25}
       />
 
       <Environment preset="sunset" background={false} />
