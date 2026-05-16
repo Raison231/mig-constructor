@@ -7,6 +7,7 @@ import { PricePanel } from '@/components/configurator/PricePanel'
 import { Timeline } from '@/components/configurator/Timeline'
 import { SelectionPanel } from '@/components/configurator/SelectionPanel'
 import { KeyboardHelp } from '@/components/configurator/KeyboardHelp'
+import { WorldPanel } from '@/components/controls/WorldPanel'
 import { Header } from '@/components/header/Header'
 import { useConfigurator } from '@/stores/configurator'
 import { useLocale } from '@/stores/locale'
@@ -77,7 +78,8 @@ export default function HomePage() {
         <div className="pointer-events-auto absolute left-6 top-24 bottom-24 w-72">
           <ModulePanel />
         </div>
-        <div className="pointer-events-auto absolute right-6 top-24 w-80 space-y-3">
+        <div className="pointer-events-auto absolute right-6 top-24 w-80 space-y-3 max-h-[calc(100vh-10rem)] overflow-y-auto">
+          <WorldPanel />
           <PricePanel />
           {selectionId && <SelectionPanel />}
         </div>
