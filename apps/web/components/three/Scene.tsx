@@ -11,6 +11,7 @@ import { SunSky } from './SunSky'
 import { Weather } from './Weather'
 import { SiteEnvironment } from './SiteEnvironment'
 import { CameraRig } from './CameraRig'
+import { MeasureTool } from './MeasureTool'
 
 const CAMERA_OPTS = { fov: 50, position: [14, 11, 14] as [number, number, number], near: 0.1, far: 200 }
 const GL_OPTS = { antialias: true, alpha: false, powerPreference: 'high-performance' as const, preserveDrawingBuffer: true }
@@ -44,6 +45,7 @@ export function Scene() {
       ))}
       <SnapPreview />
       <DragControls />
+      <MeasureTool />
       <CameraRig />
     </Canvas>
   )
