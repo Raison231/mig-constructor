@@ -3,6 +3,7 @@
 import { useConfigurator } from '@/stores/configurator'
 import { calculatePrice } from '@mig/pricing-engine'
 import { useMemo } from 'react'
+import type { CSSProperties } from 'react'
 
 export function Timeline() {
   const modules = useConfigurator((s) => s.modules)
@@ -23,16 +24,19 @@ export function Timeline() {
         <span className="text-xs text-fg-secondary">{totalWeeks} weeks total</span>
       </div>
       <div className="flex gap-1">
-        {phases.map((p) => (
-          <div
-            key={p.name}
-            className={`${p.color} flex h-8 items-center justify-center rounded-md px-2 text-[10px] font-medium text-bg`}
-            style= flex: p.weeks 
-            title={`${p.name} · ${p.weeks}w`}
-          >
-            {p.weeks}w
-          </div>
-        ))}
+        {phases.map((p) => {
+          const style: CSSProperties = { flex: p.weeks }
+          return (
+            <div
+              key={p.name}
+              className={`${p.color} flex h-8 items-center justify-center rounded-md px-2 text-[10px] font-medium text-bg`}
+              style={style}
+              title={`${p.name} · ${p.weeks}w`}
+            >
+              {p.weeks}w
+            </div>
+          )
+        })}
       </div>
     </div>
   )
