@@ -6,6 +6,15 @@ import { useConfigurator } from '@/stores/configurator'
 import { Module3D } from './Module3D'
 import { Ground } from './Ground'
 
+const CAMERA_OPTS = { fov: 50, position: [14, 11, 14] as [number, number, number], near: 0.1, far: 200 }
+const GL_OPTS = { antialias: true, alpha: false, powerPreference: 'high-performance' as const }
+const SHADOW_MAP_SIZE: [number, number] = [2048, 2048]
+const LIGHT_POS: [number, number, number] = [10, 20, 5]
+const BG_ARGS = ['#0A0A0B'] as const
+const FOG_ARGS = ['#0A0A0B', 30, 90] as const
+const GRID_ARGS: [number, number] = [40, 40]
+const DPR: [number, number] = [1, 2]
+
 export function Scene() {
   const modules = useConfigurator((s) => s.modules)
   const deselect = useConfigurator((s) => s.deselect)
@@ -13,20 +22,20 @@ export function Scene() {
   return (
     <Canvas
       shadows
-      dpr={[1, 2]}
-      camera= fov: 50, position: [14, 11, 14], near: 0.1, far: 200 
-      gl= antialias: true, alpha: false, powerPreference: 'high-performance' 
+      dpr={DPR}
+      camera={CAMERA_OPTS}
+      gl={GL_OPTS}
       onPointerMissed={() => deselect()}
     >
-      <color attach="background" args={['#0A0A0B']} />
-      <fog attach="fog" args={['#0A0A0B', 30, 90]} />
+      <color attach="background" args={BG_ARGS} />
+      <fog attach="fog" args={FOG_ARGS} />
 
       <ambientLight intensity={0.35} />
       <directionalLight
-        position={[10, 20, 5]}
+        position={LIGHT_POS}
         intensity={1.3}
         castShadow
-        shadow-mapSize={[2048, 2048]}
+        shadow-mapSize={SHADOW_MAP_SIZE}
         shadow-camera-left={-25}
         shadow-camera-right={25}
         shadow-camera-top={25}
@@ -38,7 +47,7 @@ export function Scene() {
       <Ground />
 
       <Grid
-        args={[40, 40]}
+        args={GRID_ARGS}
         cellSize={1}
         cellThickness={0.5}
         cellColor="#1a3520"

@@ -30,8 +30,12 @@ type ConfiguratorState = Snapshot & {
 let counter = 0
 const nextId = () => `mod-${Date.now()}-${++counter}`
 
-function snapshot(s: Snapshot): Snapshot {
+function snap(s: Snapshot): Snapshot {
   return { modules: s.modules.map((m) => ({ ...m })), selectionId: s.selectionId }
+}
+
+function pushPast(state: ConfiguratorState): Snapshot[] {
+  return [...state.past, snap(state)].slice(-50)
 }
 
 export const useConfigurator = create<ConfiguratorState>((set, get) => ({
@@ -52,7 +56,7 @@ export const useConfigurator = create<ConfiguratorState>((set, get) => ({
     set({
       modules: [...state.modules, newInst],
       selectionId: newInst.instanceId,
-      past: [...state.past, snapshot(state)].slice(-50),
+      past: pushPast(state),
       future: [],
     })
   },
@@ -62,7 +66,7 @@ export const useConfigurator = create<ConfiguratorState>((set, get) => ({
     set({
       modules: state.modules.filter((m) => m.instanceId !== instanceId),
       selectionId: state.selectionId === instanceId ? null : state.selectionId,
-      past: [...state.past, snapshot(state)].slice(-50),
+      past: pushPast(state),
       future: [],
     })
   },
@@ -82,7 +86,7 @@ export const useConfigurator = create<ConfiguratorState>((set, get) => ({
       modules: state.modules.map((m) =>
         m.instanceId === state.selectionId ? { ...m, rotationY: m.rotationY + delta } : m,
       ),
-      past: [...state.past, snapshot(state)].slice(-50),
+      past: pushPast(state),
       future: [],
     })
   },
@@ -100,7 +104,7 @@ export const useConfigurator = create<ConfiguratorState>((set, get) => ({
     set({
       modules: [...state.modules, copy],
       selectionId: copy.instanceId,
-      past: [...state.past, snapshot(state)].slice(-50),
+      past: pushPast(state),
       future: [],
     })
   },
@@ -109,3 +113,36 @@ export const useConfigurator = create<ConfiguratorState>((set, get) => ({
     const state = get()
     if (!state.selectionId) return
     set({
+      modules: state.modules.filter((m) => m.instanceId !== state.selectionId),
+      selectionId: null,
+      past: pushPast(state),
+      future: [],
+    })
+  },
+
+  undo: () => {
+    const state = get()
+    if (state.past.length === 0) return
+    const prev = state.past[state.past.length - 1]
+    set({
+      modules: prev.modules,
+      selectionId: prev.selectionId,
+      past: state.past.slice(0, -1),
+      future: [snap(state), ...state.future].slice(0, 50),
+    })
+  },
+
+  redo: () => {
+    const state = get()
+    if (state.future.length === 0) return
+    const next = state.future[0]
+    set({
+      modules: next.modules,
+      selectionId: next.selectionId,
+      past: pushPast(state),
+      future: state.future.slice(1),
+    })
+  },
+
+  reset: () => set({ modules: [], selectionId: null, past: [], future: [] }),
+}))
