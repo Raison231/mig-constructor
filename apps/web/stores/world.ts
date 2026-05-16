@@ -4,7 +4,7 @@ import { create } from 'zustand'
 
 export type Weather = 'clear' | 'rain' | 'snow' | 'fog'
 export type Site = 'tbilisi' | 'bakuriani' | 'kakheti' | 'adjara'
-export type CameraMode = 'orbit' | 'topdown' | 'cinematic'
+export type CameraMode = 'orbit' | 'topdown' | 'cinematic' | 'interior'
 
 type WorldState = {
   hour: number
