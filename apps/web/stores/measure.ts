@@ -7,7 +7,8 @@ export type Point3 = [number, number, number]
 type MeasureState = {
   active: boolean
   points: Point3[]
-  setActive: (a: boolean) => void
+  setActive: (v: boolean) => void
+  toggle: () => void
   addPoint: (p: Point3) => void
   clear: () => void
 }
@@ -15,11 +16,19 @@ type MeasureState = {
 export const useMeasure = create<MeasureState>((set, get) => ({
   active: false,
   points: [],
-  setActive: (active) => set({ active, points: active ? get().points : [] }),
+  setActive: (v) => set({ active: v, points: v ? get().points : [] }),
+  toggle: () => {
+    const next = !get().active
+    set({ active: next, points: next ? get().points : [] })
+  },
   addPoint: (p) => {
     const pts = get().points
-    if (pts.length >= 2) set({ points: [p] })
-    else set({ points: [...pts, p] })
+    // Click 3 resets the line to start fresh from the new point
+    if (pts.length >= 2) {
+      set({ points: [p] })
+      return
+    }
+    set({ points: [...pts, p] })
   },
   clear: () => set({ points: [] }),
 }))

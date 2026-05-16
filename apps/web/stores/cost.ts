@@ -1,42 +1,38 @@
 'use client'
 
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
 type CostState = {
-  materialPremium: number // 0..1 (0 = base, 1 = +100%)
-  locationMultiplier: number // 1..2 (1 = easy, 2 = remote)
-  rushMultiplier: number // 1..2 (1 = normal, 2 = rush)
+  materialPremium: number    // 0..1
+  locationMultiplier: number // 1..2
+  rushMultiplier: number     // 1..2
   setMaterialPremium: (v: number) => void
   setLocationMultiplier: (v: number) => void
   setRushMultiplier: (v: number) => void
   reset: () => void
 }
 
-const STORAGE_KEY = 'mig-cost-v1'
-
-function load(): Partial<CostState> | null {
-  if (typeof window === 'undefined') return null
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : null
-  } catch { return null }
-}
-function persist(s: Pick<CostState, 'materialPremium' | 'locationMultiplier' | 'rushMultiplier'>) {
-  if (typeof window === 'undefined') return
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)) } catch {}
+const DEFAULTS = {
+  materialPremium: 0,
+  locationMultiplier: 1,
+  rushMultiplier: 1,
 }
 
-const loaded = load()
+export const useCost = create<CostState>()(
+  persist(
+    (set) => ({
+      ...DEFAULTS,
+      setMaterialPremium:    (v) => set({ materialPremium: clamp(v, 0, 1) }),
+      setLocationMultiplier: (v) => set({ locationMultiplier: clamp(v, 1, 2) }),
+      setRushMultiplier:     (v) => set({ rushMultiplier: clamp(v, 1, 2) }),
+      reset: () => set({ ...DEFAULTS }),
+    }),
+    { name: 'mig-cost-v1' },
+  ),
+)
 
-export const useCost = create<CostState>((set, get) => ({
-  materialPremium: loaded?.materialPremium ?? 0,
-  locationMultiplier: loaded?.locationMultiplier ?? 1,
-  rushMultiplier: loaded?.rushMultiplier ?? 1,
-  setMaterialPremium: (materialPremium) => { set({ materialPremium }); persist({ ...get(), materialPremium }) },
-  setLocationMultiplier: (locationMultiplier) => { set({ locationMultiplier }); persist({ ...get(), locationMultiplier }) },
-  setRushMultiplier: (rushMultiplier) => { set({ rushMultiplier }); persist({ ...get(), rushMultiplier }) },
-  reset: () => {
-    set({ materialPremium: 0, locationMultiplier: 1, rushMultiplier: 1 })
-    persist({ materialPremium: 0, locationMultiplier: 1, rushMultiplier: 1 })
-  },
-}))
+function clamp(v: number, min: number, max: number): number {
+  if (Number.isNaN(v)) return min
+  return Math.max(min, Math.min(max, v))
+}

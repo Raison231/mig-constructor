@@ -1,84 +1,98 @@
-import { modules as moduleCatalog } from '@mig/modules-schema'
+import { modules } from '@mig/modules-schema'
 import type { ModuleInstance } from '@/stores/configurator'
 
-// Heuristic per-module annual energy consumption (kWh/year) by category.
-const KWH_PER_M2_YEAR: Record<string, number> = {
-  core: 120,
-  wet: 180,
-  leisure: 220,
-  utility: 60,
-  exterior: 20,
-  roof: 80,
-  cellar: 40,
-}
-
-// Water L/day per category
-const WATER_L_DAY: Record<string, number> = {
-  wet: 250,
-  core: 60,
-  leisure: 400,
-  utility: 20,
-  exterior: 80,
-  roof: 0,
-  cellar: 0,
-}
-
-// CO2 kg/m2 embodied by material
-const CO2_PER_M2: Record<string, number> = {
-  container: 180,
-  timber: 60,
-  hybrid: 120,
-}
-
 export type EnergyScore = {
+  rating: 'A+' | 'A' | 'B' | 'C' | 'D'
   consumptionKwhYear: number
   solarKwhYear: number
   waterLDay: number
   co2EmbodiedKg: number
-  autonomyPct: number
+  autonomyPct: number     // 0..100, solar / consumption
   hasWaterSource: boolean
-  hasWaterStorage: boolean
-  rating: 'A+' | 'A' | 'B' | 'C' | 'D'
+}
+
+// Per-module heuristics (kWh/year, water L/day, CO2 kg embodied) by id.
+// Solar generation: SolarTower 5500, Carport 3500 kWh/year typical for Georgia.
+const SOLAR_GEN: Record<string, number> = {
+  'solar-tower': 5500,
+  'carport': 3500,
+}
+
+const WATER_SOURCE_IDS = new Set(['well-cap', 'water-tank'])
+
+// Heating/cooling/lighting/appliances annual kWh per module type
+const CONSUMPTION: Record<string, number> = {
+  'hub-core':        2400,
+  'sleep':           1200,
+  'sleep-loft':      1500,
+  'bathroom':        1800,
+  'kitchen':         2800,
+  'workshop':        3200,
+  'greenhouse':      1600,
+  'sauna':           2200,
+  'garage':          1400,
+  'observation-deck': 600,
+  'glass-bridge':    400,
+  'terrace-roof':    300,
+  'carport':         200,
+  'well-cap':        300,
+  'water-tank':      100,
+  'solar-tower':     150,
+}
+
+// Embodied CO2 kg per material per m2 (rough industry averages)
+const CO2_PER_M2: Record<string, number> = {
+  container: 320,
+  timber:    180,
+  hybrid:    240,
+}
+
+const WATER_L_DAY: Record<string, number> = {
+  'well-cap':   1500,
+  'water-tank': 800,
 }
 
 export function calculateEnergyScore(instances: ModuleInstance[]): EnergyScore {
   let consumption = 0
   let solar = 0
-  let water = 0
+  let waterL = 0
   let co2 = 0
   let hasWaterSource = false
-  let hasWaterStorage = false
 
   for (const inst of instances) {
-    const meta = moduleCatalog.find((m) => m.id === inst.moduleId)
-    if (!meta) continue
-    const cat = meta.category
-    consumption += (KWH_PER_M2_YEAR[cat] ?? 80) * meta.area_m2
-    water += WATER_L_DAY[cat] ?? 0
-    co2 += (CO2_PER_M2[inst.material] ?? 100) * meta.area_m2
-
-    if (inst.moduleId === 'solar-tower') solar += 4200
-    if (inst.moduleId === 'carport') solar += 1800
-    if (inst.moduleId === 'rooftop') solar += 800
-    if (inst.moduleId === 'well-cap') hasWaterSource = true
-    if (inst.moduleId === 'water-tank') hasWaterStorage = true
+    const m = modules.find((x) => x.id === inst.moduleId)
+    if (!m) continue
+    consumption += CONSUMPTION[m.id] ?? 1000
+    solar       += SOLAR_GEN[m.id] ?? 0
+    waterL      += WATER_L_DAY[m.id] ?? 0
+    co2         += (CO2_PER_M2[inst.material] ?? 200) * m.area_m2
+    if (WATER_SOURCE_IDS.has(m.id)) hasWaterSource = true
   }
 
-  const autonomy = consumption > 0 ? Math.min(100, (solar / consumption) * 100) : 0
-  const rating: EnergyScore['rating'] =
-    autonomy >= 90 ? 'A+' :
-    autonomy >= 60 ? 'A' :
-    autonomy >= 35 ? 'B' :
-    autonomy >= 15 ? 'C' : 'D'
+  const autonomyPct = consumption > 0 ? Math.min(100, Math.round((solar / consumption) * 100)) : 0
+  const rating = pickRating(autonomyPct, hasWaterSource, co2, consumption)
 
   return {
+    rating,
     consumptionKwhYear: Math.round(consumption),
     solarKwhYear: Math.round(solar),
-    waterLDay: Math.round(water),
+    waterLDay: Math.round(waterL),
     co2EmbodiedKg: Math.round(co2),
-    autonomyPct: Math.round(autonomy),
+    autonomyPct,
     hasWaterSource,
-    hasWaterStorage,
-    rating,
   }
+}
+
+function pickRating(
+  autonomy: number,
+  hasWater: boolean,
+  co2: number,
+  consumption: number,
+): EnergyScore['rating'] {
+  const co2PerKwh = consumption > 0 ? co2 / consumption : 0
+  if (autonomy >= 80 && hasWater && co2PerKwh < 4)  return 'A+'
+  if (autonomy >= 60 && hasWater)                   return 'A'
+  if (autonomy >= 40)                                return 'B'
+  if (autonomy >= 20)                                return 'C'
+  return 'D'
 }

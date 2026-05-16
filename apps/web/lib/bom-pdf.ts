@@ -1,118 +1,111 @@
 import jsPDF from 'jspdf'
-import { modules as moduleCatalog } from '@mig/modules-schema'
+import { modules, calculatePrice } from '@mig/modules-schema'
 import type { ModuleInstance } from '@/stores/configurator'
 
-export type BomOptions = {
-  projectName?: string
-  materialPremium: number
-  locationMultiplier: number
-  rushMultiplier: number
+const USD_RATE = 0.37
+
+export type CostMultipliers = {
+  materialPremium: number   // 0..1 (premium added on top)
+  locationMultiplier: number // 1..2
+  rushMultiplier: number     // 1..2
 }
 
-const DELIVERY_USD = 1500
-const EARTHWORKS_USD = 3000
-const ASSEMBLY_PER_MODULE_USD = 800
+// English-only labels: jsPDF default helvetica can't render Cyrillic without addFont.
+export function generateBomPdf(
+  instances: ModuleInstance[],
+  cost: CostMultipliers,
+): void {
+  if (instances.length === 0) return
 
-export function generateBomPdf(instances: ModuleInstance[], opts: BomOptions): void {
-  const doc = new jsPDF({ unit: 'mm', format: 'a4' })
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' })
+  const W = doc.internal.pageSize.getWidth()
+  const M = 40
+  let y = M
 
-  doc.setFillColor(10, 10, 11)
-  doc.rect(0, 0, 210, 35, 'F')
-  doc.setTextColor(0, 210, 106)
+  doc.setFontSize(20)
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(22)
-  doc.text('MIG Constructor', 20, 18)
-  doc.setTextColor(245, 245, 247)
+  doc.text('MIG Constructor', M, y)
+  y += 22
   doc.setFontSize(11)
   doc.setFont('helvetica', 'normal')
-  doc.text('Bill of Materials / Specification', 20, 26)
+  doc.text('Bill of Materials', M, y)
+  y += 14
+  doc.setFontSize(9)
+  doc.setTextColor(120)
+  doc.text(new Date().toISOString().slice(0, 10), M, y)
+  doc.setTextColor(0)
+  y += 24
 
-  doc.setTextColor(20, 20, 20)
+  // Header
   doc.setFontSize(10)
-  const project = opts.projectName ?? 'Untitled Project'
-  doc.text(`Project: ${project}`, 20, 45)
-  doc.text(`Generated: ${new Date().toLocaleDateString('en-GB')}`, 20, 51)
-  doc.text(`Modules: ${instances.length}`, 20, 57)
-
-  let y = 72
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(11)
-  doc.text('Module', 20, y)
-  doc.text('Material', 90, y)
-  doc.text('Area m2', 130, y)
-  doc.text('Price USD', 165, y)
-  y += 3
-  doc.setDrawColor(0, 210, 106)
-  doc.line(20, y, 190, y)
-  y += 7
-
+  doc.text('#', M, y)
+  doc.text('Module', M + 24, y)
+  doc.text('Material', M + 180, y)
+  doc.text('Area m2', M + 260, y)
+  doc.text('USD', W - M - 60, y, { align: 'right' })
+  y += 4
+  doc.setDrawColor(180)
+  doc.line(M, y, W - M, y)
+  y += 12
   doc.setFont('helvetica', 'normal')
-  doc.setFontSize(10)
+
+  // Rows
   let subtotal = 0
   let totalArea = 0
+  instances.forEach((inst, i) => {
+    const m = modules.find((x) => x.id === inst.moduleId)
+    if (!m) return
+    const priceGel = m.price_usd[inst.material as 'container' | 'timber' | 'hybrid'] ?? 0
+    const priceUsd = priceGel ?? 0
+    subtotal += priceUsd
+    totalArea += m.area_m2
+    if (y > 760) {
+      doc.addPage()
+      y = M
+    }
+    doc.text(String(i + 1), M, y)
+    doc.text(m.name.en, M + 24, y)
+    doc.text(inst.material, M + 180, y)
+    doc.text(m.area_m2.toString(), M + 260, y)
+    doc.text(priceUsd.toLocaleString(), W - M - 60, y, { align: 'right' })
+    y += 14
+  })
 
-  for (const inst of instances) {
-    const meta = moduleCatalog.find((m) => m.id === inst.moduleId)
-    if (!meta) continue
-    const price = (meta.price_usd as Record<string, number | null>)[inst.material] ?? 0
-    subtotal += price
-    totalArea += meta.area_m2
-
-    doc.text(meta.name.en, 20, y)
-    doc.text(inst.material, 90, y)
-    doc.text(String(meta.area_m2), 130, y)
-    doc.text(`$${price.toLocaleString('en-US')}`, 165, y)
-    y += 6
-    if (y > 260) { doc.addPage(); y = 25 }
-  }
-
-  y += 4
-  doc.setDrawColor(150, 150, 150)
-  doc.line(20, y, 190, y)
+  // Totals & cost adjustments
   y += 8
-
-  const premiumed = subtotal * (1 + opts.materialPremium)
-  const located = premiumed * opts.locationMultiplier
-  const delivery = DELIVERY_USD * opts.locationMultiplier
-  const earthworks = EARTHWORKS_USD * opts.locationMultiplier
-  const assembly = ASSEMBLY_PER_MODULE_USD * instances.length * opts.rushMultiplier
-  const grand = located + delivery + earthworks + assembly
-
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(10)
-  const rows: Array<[string, number]> = [
-    ['Modules subtotal', subtotal],
-    ['Material premium', premiumed - subtotal],
-    ['Location multiplier', located - premiumed],
-    ['Delivery', delivery],
-    ['Earthworks + foundation', earthworks],
-    ['Assembly (rush adjusted)', assembly],
-  ]
-  for (const [label, val] of rows) {
-    doc.text(label, 90, y)
-    doc.text(`$${Math.round(val).toLocaleString('en-US')}`, 165, y)
-    y += 6
-  }
-
-  y += 2
-  doc.setDrawColor(0, 210, 106)
-  doc.setLineWidth(0.6)
-  doc.line(90, y, 190, y)
-  y += 8
+  doc.setDrawColor(0)
+  doc.line(M, y, W - M, y)
+  y += 16
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(13)
-  doc.text('TOTAL', 90, y)
-  doc.text(`$${Math.round(grand).toLocaleString('en-US')}`, 165, y)
-  y += 10
+  doc.text(`Modules subtotal:`, M, y)
+  doc.text(`USD ${subtotal.toLocaleString()}`, W - M, y, { align: 'right' })
+  y += 14
+
+  const base = calculatePrice(instances.map((i) => ({ moduleId: i.moduleId, material: i.material })))
+  const baseUsd = base.total * USD_RATE
+  const premium = baseUsd * cost.materialPremium
+  const locAdj = baseUsd * (cost.locationMultiplier - 1)
+  const rushAdj = baseUsd * (cost.rushMultiplier - 1)
+  const finalUsd = Math.round(baseUsd + premium + locAdj + rushAdj)
+
   doc.setFont('helvetica', 'normal')
-  doc.setFontSize(9)
-  doc.setTextColor(120, 120, 120)
-  doc.text(`Total floor area: ${totalArea} m2`, 90, y)
-  y += 5
-  doc.text('Prices indicative. Final quote subject to site survey.', 20, y)
+  doc.text(`Total area:`, M, y); doc.text(`${totalArea.toFixed(1)} m2`, W - M, y, { align: 'right' }); y += 12
+  doc.text(`Delivery + earthworks + assembly:`, M, y); doc.text(`USD ${Math.round(baseUsd - subtotal).toLocaleString()}`, W - M, y, { align: 'right' }); y += 12
+  doc.text(`Material premium (+${Math.round(cost.materialPremium * 100)}%):`, M, y); doc.text(`USD ${Math.round(premium).toLocaleString()}`, W - M, y, { align: 'right' }); y += 12
+  doc.text(`Site difficulty (x${cost.locationMultiplier.toFixed(2)}):`, M, y); doc.text(`USD ${Math.round(locAdj).toLocaleString()}`, W - M, y, { align: 'right' }); y += 12
+  doc.text(`Rush factor (x${cost.rushMultiplier.toFixed(2)}):`, M, y); doc.text(`USD ${Math.round(rushAdj).toLocaleString()}`, W - M, y, { align: 'right' }); y += 16
+
+  doc.setFontSize(13)
+  doc.setFont('helvetica', 'bold')
+  doc.text(`FINAL TOTAL:`, M, y)
+  doc.text(`USD ${finalUsd.toLocaleString()}`, W - M, y, { align: 'right' })
+  y += 24
 
   doc.setFontSize(8)
-  doc.text('Generated by MIG Constructor v0.6 | mig-constructor', 20, 285)
+  doc.setTextColor(140)
+  doc.setFont('helvetica', 'normal')
+  doc.text('Generated by MIG Constructor · mig-constructor.app', M, 820)
 
   doc.save(`mig-bom-${Date.now()}.pdf`)
 }
