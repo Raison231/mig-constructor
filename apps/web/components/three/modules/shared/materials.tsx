@@ -1,9 +1,11 @@
 import type { JSX } from 'react'
 
 // ════════════════════════════════════════════════════════════════
-// PBR Materials Registry — Wave 11
+// PBR Materials Registry — Wave 11 + Wave 12
 // Единый реестр физически-корректных материалов для 3D-модулей.
 // Tuned под canvas #f8f9fc + drei <Environment preset="city" /> IBL.
+// Wave 12: +5 domain presets (poolWater, solarPanel, greenhouseGlass,
+// terracottaTile, rustedMetal) — итого 30 пресетов.
 // ════════════════════════════════════════════════════════════════
 
 export type PBRPresetName =
@@ -19,18 +21,23 @@ export type PBRPresetName =
   | 'glassFrosted'
   | 'glassBlue'
   | 'glassTinted'
+  | 'greenhouseGlass'
   | 'aluminum'
   | 'aluminumBrushed'
   | 'copper'
   | 'brass'
+  | 'rustedMetal'
+  | 'solarPanel'
   | 'blackMatte'
   | 'blackGlossy'
   | 'ledWarm'
   | 'ledCool'
   | 'ledOrange'
   | 'water'
+  | 'poolWater'
   | 'foliage'
   | 'terracotta'
+  | 'terracottaTile'
   | 'stone'
 
 type BaseProps = {
@@ -70,7 +77,7 @@ export const pbrPresets: Record<PBRPresetName, PBRPreset> = {
   timberDark: { color: '#6B4F38', roughness: 0.82, metalness: 0, envMapIntensity: 0.65 },
   timberCharred: { color: '#2A1810', roughness: 0.95, metalness: 0.02, envMapIntensity: 0.5 },
 
-  // ─── Бетон / камень / земля ───
+  // ─── Бетон / камень / земля / черепица ───
   concrete: { color: '#C8C5BE', roughness: 0.88, metalness: 0.02, envMapIntensity: 0.6 },
   concretePolished: {
     physical: true,
@@ -83,6 +90,7 @@ export const pbrPresets: Record<PBRPresetName, PBRPreset> = {
   },
   stone: { color: '#8E8A82', roughness: 0.92, metalness: 0.02, envMapIntensity: 0.55 },
   terracotta: { color: '#C0613B', roughness: 0.85, metalness: 0, envMapIntensity: 0.65 },
+  terracottaTile: { color: '#B85A2E', roughness: 0.78, metalness: 0.03, envMapIntensity: 0.7 },
 
   // ─── Стекло (physical + transmission) ───
   glassClear: {
@@ -139,12 +147,35 @@ export const pbrPresets: Record<PBRPresetName, PBRPreset> = {
     clearcoat: 0.7,
     clearcoatRoughness: 0.08,
   },
+  greenhouseGlass: {
+    physical: true,
+    color: '#d0f0d8',
+    roughness: 0.06,
+    metalness: 0,
+    envMapIntensity: 1.15,
+    transmission: 0.85,
+    thickness: 0.25,
+    ior: 1.5,
+    transparent: true,
+    opacity: 0.5,
+    clearcoat: 0.9,
+    clearcoatRoughness: 0.05,
+  },
 
   // ─── Металлы ───
   aluminum: { color: '#C5C9CE', roughness: 0.4, metalness: 0.92, envMapIntensity: 1.2 },
   aluminumBrushed: { color: '#B8BCC2', roughness: 0.55, metalness: 0.88, envMapIntensity: 1.1 },
   copper: { color: '#B87333', roughness: 0.35, metalness: 0.95, envMapIntensity: 1.3 },
   brass: { color: '#C9A227', roughness: 0.42, metalness: 0.9, envMapIntensity: 1.2 },
+  rustedMetal: { color: '#8a4a28', roughness: 0.72, metalness: 0.5, envMapIntensity: 0.8 },
+  solarPanel: {
+    color: '#1a3a6a',
+    roughness: 0.12,
+    metalness: 0.88,
+    envMapIntensity: 1.25,
+    emissive: '#0a1a3a',
+    emissiveIntensity: 0.25,
+  },
 
   // ─── Чёрные ───
   blackMatte: { color: '#15151a', roughness: 0.85, metalness: 0.05, envMapIntensity: 0.5 },
@@ -196,6 +227,20 @@ export const pbrPresets: Record<PBRPresetName, PBRPreset> = {
     ior: 1.33,
     transparent: true,
     opacity: 0.85,
+    clearcoat: 1,
+    clearcoatRoughness: 0.04,
+  },
+  poolWater: {
+    physical: true,
+    color: '#3aa6c4',
+    roughness: 0.06,
+    metalness: 0,
+    envMapIntensity: 1.6,
+    transmission: 0.55,
+    thickness: 0.4,
+    ior: 1.33,
+    transparent: true,
+    opacity: 0.82,
     clearcoat: 1,
     clearcoatRoughness: 0.04,
   },
