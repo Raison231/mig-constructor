@@ -4,6 +4,7 @@ import { Canvas } from '@react-three/fiber'
 import { Grid } from '@react-three/drei'
 import { useConfigurator } from '@/stores/configurator'
 import { usePhysics } from '@/stores/physics'
+import { useCinematic } from '@/stores/cinematic'
 import { Module3D } from './Module3D'
 import { Ground } from './Ground'
 import { DragControls } from './DragControls'
@@ -15,6 +16,10 @@ import { CameraRig } from './CameraRig'
 import { MeasureTool } from './MeasureTool'
 import { CranePhysics } from './CranePhysics'
 import { AnnotationLayer } from './AnnotationLayer'
+import { ARScene } from './ARScene'
+import { RealtimeCursors } from './RealtimeCursors'
+import { WalkthroughCamera } from './WalkthroughCamera'
+import { DroneCamera } from './DroneCamera'
 
 const CAMERA_OPTS = { fov: 50, position: [14, 11, 14] as [number, number, number], near: 0.1, far: 200 }
 const GL_OPTS = { antialias: true, alpha: false, powerPreference: 'high-performance' as const, preserveDrawingBuffer: true }
@@ -25,6 +30,8 @@ export function Scene() {
   const modules = useConfigurator((s) => s.modules)
   const deselect = useConfigurator((s) => s.deselect)
   const physicsActive = usePhysics((s) => s.active)
+  const cinematicMode = useCinematic((s) => s.mode)
+  const cinematicActive = cinematicMode !== 'off'
 
   return (
     <Canvas
@@ -34,26 +41,31 @@ export function Scene() {
       gl={GL_OPTS}
       onPointerMissed={() => deselect()}
     >
-      <SiteEnvironment />
-      <SunSky />
-      <Weather />
-      <Ground />
-      <Grid
-        args={GRID_ARGS}
-        cellSize={1} cellThickness={0.5} cellColor="#1a3520"
-        sectionSize={5} sectionThickness={1} sectionColor="#00D26A"
-        fadeDistance={30} fadeStrength={1.5} infiniteGrid
-      />
-      {physicsActive ? (
-        <CranePhysics />
-      ) : (
-        modules.map((m) => <Module3D key={m.instanceId} instance={m} />)
-      )}
-      <AnnotationLayer />
-      <SnapPreview />
-      {!physicsActive && <DragControls />}
-      <MeasureTool />
-      <CameraRig />
+      <ARScene>
+        <SiteEnvironment />
+        <SunSky />
+        <Weather />
+        <Ground />
+        <Grid
+          args={GRID_ARGS}
+          cellSize={1} cellThickness={0.5} cellColor="#1a3520"
+          sectionSize={5} sectionThickness={1} sectionColor="#00D26A"
+          fadeDistance={30} fadeStrength={1.5} infiniteGrid
+        />
+        {physicsActive ? (
+          <CranePhysics />
+        ) : (
+          modules.map((m) => <Module3D key={m.instanceId} instance={m} />)
+        )}
+        <AnnotationLayer />
+        <RealtimeCursors />
+        <SnapPreview />
+        {!physicsActive && !cinematicActive && <DragControls />}
+        <MeasureTool />
+        {!cinematicActive && <CameraRig />}
+        <WalkthroughCamera />
+        <DroneCamera />
+      </ARScene>
     </Canvas>
   )
 }
