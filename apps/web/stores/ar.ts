@@ -1,31 +1,33 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+
+export type ARSessionStatus = 'idle' | 'requesting' | 'active' | 'unsupported' | 'denied'
 
 type ARState = {
-  active: boolean
-  supported: boolean | null
-  anchored: boolean
-  scale: number
-  setActive: (v: boolean) => void
-  setSupported: (v: boolean) => void
-  setAnchored: (v: boolean) => void
-  setScale: (v: number) => void
-  toggle: () => void
+	status: ARSessionStatus
+	supported: boolean
+	placementScale: number
+	placementHeightY: number
+	rotationY: number
+	setStatus: (s: ARSessionStatus) => void
+	setSupported: (s: boolean) => void
+	setPlacementScale: (n: number) => void
+	setPlacementHeightY: (n: number) => void
+	setRotationY: (n: number) => void
+	reset: () => void
 }
 
-export const useAR = create<ARState>()(
-  persist(
-    (set, get) => ({
-      active: false,
-      supported: null,
-      anchored: false,
-      scale: 1,
-      setActive: (v) => set({ active: v }),
-      setSupported: (v) => set({ supported: v }),
-      setAnchored: (v) => set({ anchored: v }),
-      setScale: (v) => set({ scale: Math.max(0.1, Math.min(5, v)) }),
-      toggle: () => set({ active: !get().active }),
-    }),
-    { name: 'mig-ar-v1', partialize: (s) => ({ scale: s.scale }) }
-  )
-)
+export const useAR = create<ARState>((set) => ({
+	status: 'idle',
+	supported: false,
+	placementScale: 1,
+	placementHeightY: 0,
+	rotationY: 0,
+	setStatus: (status) => set({ status }),
+	setSupported: (supported) => set({ supported }),
+	setPlacementScale: (placementScale) =>
+		set({ placementScale: Math.max(0.1, Math.min(5, placementScale)) }),
+	setPlacementHeightY: (placementHeightY) => set({ placementHeightY }),
+	setRotationY: (rotationY) => set({ rotationY }),
+	reset: () =>
+		set({ status: 'idle', placementScale: 1, placementHeightY: 0, rotationY: 0 }),
+}))

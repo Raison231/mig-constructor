@@ -1,20 +1,44 @@
-// AR helpers. Detect WebXR "immersive-ar" support, normalize hit-test pose.
-
-export async function detectARSupport(): Promise<boolean> {
-  if (typeof navigator === 'undefined') return false
-  const xr = (navigator as Navigator & { xr?: { isSessionSupported: (m: string) => Promise<boolean> } }).xr
-  if (!xr || typeof xr.isSessionSupported !== 'function') return false
-  try {
-    return await xr.isSessionSupported('immersive-ar')
-  } catch {
-    return false
-  }
+/**
+ * Проверка поддержки WebXR AR в текущем браузере.
+ * Возвращает true если доступен 'immersive-ar' сеанс.
+ */
+export async function isARSupported(): Promise<boolean> {
+	if (typeof navigator === 'undefined') return false
+	const xr = (navigator as Navigator & { xr?: { isSessionSupported: (mode: string) => Promise<boolean> } }).xr
+	if (!xr || typeof xr.isSessionSupported !== 'function') return false
+	try {
+		return await xr.isSessionSupported('immersive-ar')
+	} catch {
+		return false
+	}
 }
 
-export const AR_DEFAULT_SCALE = 0.04 // 1m in editor → 4cm on table
-export const AR_MIN_SCALE = 0.01
-export const AR_MAX_SCALE = 0.5
+/** Базовая инфа о AR-фичах устройства. */
+export function getARCapabilityHint(): {
+	platform: 'ios' | 'android' | 'desktop' | 'unknown'
+	hint: string
+} {
+	if (typeof navigator === 'undefined') return { platform: 'unknown', hint: '' }
+	const ua = navigator.userAgent.toLowerCase()
+	if (/iphone|ipad|ipod/.test(ua)) {
+		return {
+			platform: 'ios',
+			hint: 'iOS: WebXR ограничен. Используй Safari + iOS 17+ или экспортируй .usdz для AR Quick Look.',
+		}
+	}
+	if (/android/.test(ua)) {
+		return {
+			platform: 'android',
+			hint: 'Android: Chrome + ARCore. Нужно разрешение камеры.',
+		}
+	}
+	return {
+		platform: 'desktop',
+		hint: 'Desktop не поддерживает immersive-ar. Открой ссылку на телефоне.',
+	}
+}
 
-export function clampScale(v: number): number {
-  return Math.max(AR_MIN_SCALE, Math.min(AR_MAX_SCALE, v))
+/** Утилита: snap значение к сетке (для placement в AR). */
+export function snapToGrid(value: number, gridSize = 0.1): number {
+	return Math.round(value / gridSize) * gridSize
 }

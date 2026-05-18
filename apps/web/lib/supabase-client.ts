@@ -1,28 +1,35 @@
-// Singleton Supabase client. Returns null when env vars are missing so the
-// rest of the app degrades gracefully (realtime cursors disabled, no crash).
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
-let cached: SupabaseClient | null | undefined
+let cached: SupabaseClient | null = null
 
+/**
+ * Lazy-инициализация Supabase клиента.
+ * Если env-переменные не заданы — возвращает null, и Realtime тихо деградирует
+ * до offline-режима (можно работать без коллаборации).
+ */
 export function getSupabase(): SupabaseClient | null {
-  if (cached !== undefined) return cached
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  if (!url || !key) {
-    cached = null
-    return null
-  }
-  try {
-    cached = createClient(url, key, {
-      realtime: { params: { eventsPerSecond: 30 } },
-      auth: { persistSession: false },
-    })
-  } catch {
-    cached = null
-  }
-  return cached
+	if (cached) return cached
+	if (typeof window === 'undefined') return null
+
+	const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+	const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+	if (!url || !anon) return null
+
+	try {
+		cached = createClient(url, anon, {
+			realtime: { params: { eventsPerSecond: 10 } },
+			auth: { persistSession: false },
+		})
+		return cached
+	} catch {
+		return null
+	}
 }
 
-export function realtimeEnabled(): boolean {
-  return getSupabase() !== null
+export function isSupabaseConfigured(): boolean {
+	return Boolean(
+		process.env.NEXT_PUBLIC_SUPABASE_URL &&
+			process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+	)
 }
