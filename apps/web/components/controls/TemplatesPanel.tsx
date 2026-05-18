@@ -23,10 +23,10 @@ function ToggleButton({ active, onClick, children }: ToggleButtonProps) {
       type="button"
       onClick={onClick}
       className={
-        'rounded-md border px-2 py-1 text-xs font-medium transition ' +
+        'rounded-xl px-2.5 py-1 text-[11px] font-bold transition border ' +
         (active
-          ? 'border-acc bg-acc text-bg'
-          : 'border-white/10 text-fg-muted hover:border-white/30 hover:text-fg')
+          ? 'bg-brand-primary text-white border-brand-primary shadow-aurora-primary'
+          : 'bg-white/60 text-ink2 border-hairline hover:bg-white hover:text-ink')
       }
     >
       {children}
@@ -63,6 +63,9 @@ export function TemplatesPanel() {
     ? locale === 'ru' ? activePreset.nameRu : locale === 'ka' ? activePreset.nameKa : activePreset.nameEn
     : null
 
+  const hasModules = modules.length > 0
+  const hasSnapshot = !!(snapshotA || snapshotB)
+
   function handleAddNote() {
     if (!annActive) setAnnActive(true)
     const text = window.prompt(t('annotations.placeholder', locale))
@@ -70,62 +73,60 @@ export function TemplatesPanel() {
     annAdd({
       position: [0, 1.5, 0],
       text: text.trim(),
-      color: '#00D26A',
+      color: '#10B981',
     })
   }
 
   return (
     <>
-      <div className="rounded-xl border border-white/10 bg-panel/95 p-3 backdrop-blur">
-        <div className="mb-2 flex items-center justify-between">
-          <div className="text-xs font-bold uppercase tracking-wider text-fg">{t('w7.title', locale)}</div>
+      <div className="glass rounded-3xl p-3.5">
+        <div className="mb-3 flex items-center justify-between">
+          <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-ink3">{t('w7.title', locale)}</div>
           {activePresetLabel && (
-            <span className="rounded-full bg-acc/20 px-2 py-0.5 text-[10px] font-semibold text-acc">{activePresetLabel}</span>
+            <span className="rounded-full bg-brand-primary/12 text-brand-primary text-[10px] font-bold px-2 py-0.5 border border-brand-primary/25">{activePresetLabel}</span>
           )}
         </div>
 
-        {/* Templates */}
         <div className="mb-3">
-          <div className="mb-1 text-[10px] uppercase tracking-wider text-fg-muted">{t('templates.title', locale)}</div>
+          <div className="mb-1.5 text-[10px] text-ink3 font-medium">{t('templates.title', locale)}</div>
           <button
             type="button"
             onClick={() => setGalleryOpen(true)}
-            className="w-full rounded-md border border-white/10 px-3 py-2 text-left text-sm font-medium text-fg transition hover:border-acc hover:bg-white/5"
+            className="w-full rounded-2xl border border-hairline bg-gradient-to-r from-brand-primary/12 via-brand-secondary/12 to-brand-field/12 px-3 py-2.5 text-left text-[13px] font-bold text-ink hover:border-brand-primary/40 hover:from-brand-primary/18 hover:to-brand-field/18 transition"
           >
             🎨 {t('templates.open', locale)}
           </button>
         </div>
 
-        {/* Physics */}
         <div className="mb-3">
-          <div className="mb-1 text-[10px] uppercase tracking-wider text-fg-muted">{t('physics.title', locale)}</div>
-          <div className="flex flex-wrap gap-2">
+          <div className="mb-1.5 text-[10px] text-ink3 font-medium">{t('physics.title', locale)}</div>
+          <div className="flex flex-wrap gap-1.5">
             <ToggleButton active={physicsActive} onClick={() => setPhysicsActive(!physicsActive)}>
               {physicsActive ? t('physics.on', locale) : t('physics.off', locale)}
             </ToggleButton>
             <button
               type="button"
               onClick={() => { if (!physicsActive) setPhysicsActive(true); dropAll() }}
-              className="rounded-md border border-white/10 px-2 py-1 text-xs text-fg-muted hover:border-white/30 hover:text-fg"
+              className="rounded-xl border border-hairline bg-white/60 px-2.5 py-1 text-[11px] font-bold text-ink2 hover:bg-white hover:text-ink transition"
             >
               🏗️ {t('physics.dropAll', locale)}
             </button>
           </div>
         </div>
 
-        {/* Annotations */}
         <div className="mb-3">
-          <div className="mb-1 text-[10px] uppercase tracking-wider text-fg-muted">
-            {t('annotations.title', locale)} · {annList.length}
+          <div className="mb-1.5 flex items-center gap-2 text-[10px] text-ink3 font-medium">
+            <span>{t('annotations.title', locale)}</span>
+            <span className="rounded-full bg-brand-field/15 text-brand-field px-1.5 py-px text-[9px] font-extrabold">{annList.length}</span>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             <ToggleButton active={annActive} onClick={() => setAnnActive(!annActive)}>
               {annActive ? t('annotations.shown', locale) : t('annotations.hidden', locale)}
             </ToggleButton>
             <button
               type="button"
               onClick={handleAddNote}
-              className="rounded-md border border-white/10 px-2 py-1 text-xs text-fg-muted hover:border-white/30 hover:text-fg"
+              className="rounded-xl border border-hairline bg-white/60 px-2.5 py-1 text-[11px] font-bold text-ink2 hover:bg-white hover:text-ink transition"
             >
               + {t('annotations.add', locale)}
             </button>
@@ -133,7 +134,7 @@ export function TemplatesPanel() {
               <button
                 type="button"
                 onClick={annClear}
-                className="rounded-md border border-white/10 px-2 py-1 text-xs text-fg-muted hover:border-red-400 hover:text-red-400"
+                className="rounded-xl border border-brand-coral/30 bg-brand-coral/10 px-2.5 py-1 text-[11px] font-bold text-brand-coral hover:bg-brand-coral hover:text-white transition"
               >
                 {t('annotations.clear', locale)}
               </button>
@@ -141,31 +142,30 @@ export function TemplatesPanel() {
           </div>
         </div>
 
-        {/* Compare */}
         <div>
-          <div className="mb-1 text-[10px] uppercase tracking-wider text-fg-muted">{t('compare.title', locale)}</div>
-          <div className="flex flex-wrap gap-2">
+          <div className="mb-1.5 text-[10px] text-ink3 font-medium">{t('compare.title', locale)}</div>
+          <div className="flex flex-wrap gap-1.5">
             <button
               type="button"
               onClick={() => snapshotToA(modules)}
-              disabled={modules.length === 0}
-              className="rounded-md border border-white/10 px-2 py-1 text-xs text-fg hover:border-acc disabled:cursor-not-allowed disabled:opacity-40"
+              disabled={!hasModules}
+              className="rounded-xl border border-hairline bg-white/60 px-2.5 py-1 text-[11px] font-bold text-ink hover:bg-white hover:border-brand-primary/40 disabled:cursor-not-allowed disabled:opacity-40 transition"
             >
               📸 A ({snapshotA?.length ?? 0})
             </button>
             <button
               type="button"
               onClick={() => snapshotToB(modules)}
-              disabled={modules.length === 0}
-              className="rounded-md border border-white/10 px-2 py-1 text-xs text-fg hover:border-acc disabled:cursor-not-allowed disabled:opacity-40"
+              disabled={!hasModules}
+              className="rounded-xl border border-hairline bg-white/60 px-2.5 py-1 text-[11px] font-bold text-ink hover:bg-white hover:border-brand-secondary/40 disabled:cursor-not-allowed disabled:opacity-40 transition"
             >
               📸 B ({snapshotB?.length ?? 0})
             </button>
             <button
               type="button"
               onClick={() => setCompareActive(!compareActive)}
-              disabled={!snapshotA && !snapshotB}
-              className="rounded-md border border-acc px-2 py-1 text-xs font-semibold text-acc hover:bg-acc hover:text-bg disabled:cursor-not-allowed disabled:opacity-40"
+              disabled={!hasSnapshot}
+              className="rounded-xl border border-brand-primary bg-brand-primary px-2.5 py-1 text-[11px] font-extrabold text-white hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 shadow-aurora-primary transition"
             >
               ⚚ {compareActive ? t('compare.close', locale) : t('compare.open', locale)}
             </button>

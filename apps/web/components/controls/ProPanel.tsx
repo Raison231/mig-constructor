@@ -10,11 +10,11 @@ import { generateBomPdf } from '@/lib/bom-pdf'
 import { useMemo, useState } from 'react'
 
 const RATING_COLOR: Record<string, string> = {
-  'A+': 'text-accent-green',
-  'A':  'text-accent-green',
-  'B':  'text-yellow-400',
-  'C':  'text-orange-400',
-  'D':  'text-red-400',
+  'A+': 'text-brand-primary',
+  'A':  'text-brand-primary',
+  'B':  'text-brand-accent',
+  'C':  'text-orange-500',
+  'D':  'text-brand-coral',
 }
 
 export function ProPanel() {
@@ -53,20 +53,20 @@ export function ProPanel() {
   }
 
   return (
-    <div className="glass rounded-2xl p-3 space-y-3">
+    <div className="glass rounded-3xl p-3.5 space-y-3">
       <div className="flex items-center justify-between">
-        <h2 className="font-mono text-xs uppercase tracking-wider text-fg-secondary">
-          {t('pro.title', locale)}
-        </h2>
-        <span className="text-[9px] text-accent-green font-mono">v0.6</span>
+        <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-ink3">{t('pro.title', locale)}</div>
+        <span className="rounded-full bg-brand-primary/12 text-brand-primary text-[10px] font-bold px-2 py-0.5 border border-brand-primary/25 font-mono">v0.9</span>
       </div>
 
-      <div className="grid grid-cols-3 gap-1">
+      <div className="grid grid-cols-3 gap-1 rounded-2xl bg-white/45 p-1 border border-hairline">
         {(['energy', 'cost', 'tools'] as const).map((k) => (
           <button
             key={k}
             onClick={() => setTab(k)}
-            className={`rounded-md py-1 text-[10px] ${tab === k ? 'bg-accent-green text-bg' : 'bg-bg hover:bg-panel'}`}
+            className={`rounded-xl py-1.5 text-[10px] font-bold transition ${
+              tab === k ? 'bg-white text-ink shadow-aurora' : 'text-ink3 hover:text-ink2'
+            }`}
           >
             {t(`pro.tab.${k}`, locale)}
           </button>
@@ -74,10 +74,10 @@ export function ProPanel() {
       </div>
 
       {tab === 'energy' && (
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           <div className="flex items-baseline justify-between">
-            <span className="text-[10px] text-fg-secondary">{t('energy.rating', locale)}</span>
-            <span className={`text-2xl font-bold font-mono ${RATING_COLOR[energy.rating] ?? 'text-fg'}`}>
+            <span className="text-[10px] text-ink2 font-medium">{t('energy.rating', locale)}</span>
+            <span className={`text-3xl font-extrabold font-mono ${RATING_COLOR[energy.rating] ?? 'text-ink'}`}>
               {energy.rating}
             </span>
           </div>
@@ -87,10 +87,10 @@ export function ProPanel() {
           <Row label={t('energy.water', locale)} value={`${energy.waterLDay.toLocaleString()} L/day`} />
           <Row label={t('energy.co2', locale)}   value={`${energy.co2EmbodiedKg.toLocaleString()} kg CO2`} />
           {!energy.hasWaterSource && (
-            <div className="text-[9px] text-yellow-400/80">{t('energy.noWater', locale)}</div>
+            <div className="text-[9px] text-brand-accent font-medium">{t('energy.noWater', locale)}</div>
           )}
           {energy.autonomyPct < 30 && energy.consumptionKwhYear > 0 && (
-            <div className="text-[9px] text-orange-400/80">{t('energy.lowAutonomy', locale)}</div>
+            <div className="text-[9px] text-brand-coral font-medium">{t('energy.lowAutonomy', locale)}</div>
           )}
         </div>
       )}
@@ -120,7 +120,7 @@ export function ProPanel() {
           />
           <button
             onClick={resetCost}
-            className="w-full text-[10px] py-1 rounded-md bg-bg hover:bg-panel text-fg-secondary"
+            className="w-full text-[10px] py-1.5 rounded-xl border border-hairline bg-white/60 text-ink2 hover:bg-white hover:text-ink transition"
           >
             {t('cost.reset', locale)}
           </button>
@@ -132,24 +132,28 @@ export function ProPanel() {
           <button
             onClick={handleBom}
             disabled={modules.length === 0 || bomBusy}
-            className="w-full text-[11px] py-2 rounded-md bg-accent-green text-bg font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110"
+            className="w-full text-[11px] py-2.5 rounded-2xl bg-gradient-to-r from-brand-primary to-emerald-400 text-white font-bold shadow-aurora-primary disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition"
           >
-            {bomBusy ? '...' : `\ud83d\udcc4 ${t('pro.bom', locale)}`}
+            {bomBusy ? '…' : `📄 ${t('pro.bom', locale)}`}
           </button>
           <button
             onClick={() => setMeasureActive(!measureActive)}
-            className={`w-full text-[11px] py-2 rounded-md font-medium ${measureActive ? 'bg-accent-orange text-bg' : 'bg-bg hover:bg-panel'}`}
+            className={`w-full text-[11px] py-2.5 rounded-2xl font-bold transition border ${
+              measureActive
+                ? 'bg-brand-accent text-white border-brand-accent shadow-aurora'
+                : 'bg-white/60 text-ink border-hairline hover:bg-white'
+            }`}
           >
-            {measureActive ? `\u25fc ${t('pro.measureOn', locale)}` : `\ud83d\udccf ${t('pro.measure', locale)}`}
+            {measureActive ? `◾ ${t('pro.measureOn', locale)}` : `📏 ${t('pro.measure', locale)}`}
           </button>
           {measureActive && (
             <>
-              <div className="text-[9px] text-fg-secondary leading-tight">
+              <div className="text-[9px] text-ink2 leading-tight">
                 {t('pro.measureHint', locale)}
               </div>
               <button
                 onClick={clearMeasure}
-                className="w-full text-[10px] py-1 rounded-md bg-bg hover:bg-panel text-fg-secondary"
+                className="w-full text-[10px] py-1.5 rounded-xl border border-hairline bg-white/60 text-ink2 hover:bg-white transition"
               >
                 {t('pro.measureClear', locale)}
               </button>
@@ -164,8 +168,8 @@ export function ProPanel() {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between text-[10px]">
-      <span className="text-fg-secondary">{label}</span>
-      <span className="font-mono text-fg">{value}</span>
+      <span className="text-ink2">{label}</span>
+      <span className="font-mono text-ink">{value}</span>
     </div>
   )
 }
@@ -175,12 +179,12 @@ function Bar({ label, value, max, suffix }: { label: string; value: number; max:
   return (
     <div>
       <div className="flex items-center justify-between text-[10px] mb-1">
-        <span className="text-fg-secondary">{label}</span>
-        <span className="font-mono text-fg">{value}{suffix}</span>
+        <span className="text-ink2">{label}</span>
+        <span className="font-mono text-ink font-semibold">{value}{suffix}</span>
       </div>
-      <div className="h-1.5 rounded-full bg-bg overflow-hidden">
+      <div className="h-2 rounded-full bg-white/60 border border-hairline overflow-hidden">
         <div
-          className="h-full bg-accent-green transition-all"
+          className="h-full bg-gradient-to-r from-brand-primary to-emerald-400 transition-all"
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -197,14 +201,14 @@ function Slider({
   return (
     <div>
       <div className="flex items-center justify-between text-[10px] mb-1">
-        <span className="text-fg-secondary">{label}</span>
-        <span className="font-mono text-accent-green">{display}</span>
+        <span className="text-ink2">{label}</span>
+        <span className="font-mono text-brand-primary font-bold">{display}</span>
       </div>
       <input
         type="range"
         min={min} max={max} step={step} value={value}
         onChange={(e) => onChange(parseFloat(e.target.value))}
-        className="w-full accent-accent-green"
+        className="aurora-range w-full"
       />
     </div>
   )
