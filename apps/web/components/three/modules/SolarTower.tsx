@@ -1,3 +1,4 @@
+import { PBRMaterial } from './shared/materials'
 import type { Material } from '@mig/modules-schema'
 
 export function SolarTower({ material: _material, w, h, d: _d }: { material: Material; w: number; h: number; d: number }) {
@@ -6,7 +7,7 @@ export function SolarTower({ material: _material, w, h, d: _d }: { material: Mat
     <group>
       <mesh position={[0, h / 2, 0]} castShadow>
         <boxGeometry args={[w * 0.3, h, w * 0.3]} />
-        <meshStandardMaterial color="#3a3a3e" metalness={0.6} roughness={0.5} />
+        <PBRMaterial preset="blackMatte" />
       </mesh>
       {Array.from({ length: panelCount }).map((_, i) => (
         <mesh
@@ -16,7 +17,7 @@ export function SolarTower({ material: _material, w, h, d: _d }: { material: Mat
           castShadow
         >
           <boxGeometry args={[w * 0.7, 0.04, w * 0.28]} />
-          <meshStandardMaterial color="#1a3a6a" metalness={0.85} roughness={0.12} emissive="#0a1a3a" emissiveIntensity={0.2} />
+          <PBRMaterial preset="solarPanel" />
         </mesh>
       ))}
       <mesh position={[0, h + 0.25, 0]}>
@@ -25,7 +26,7 @@ export function SolarTower({ material: _material, w, h, d: _d }: { material: Mat
       </mesh>
       <mesh position={[0, h + 0.45, 0]}>
         <cylinderGeometry args={[0.02, 0.02, 0.4, 6]} />
-        <meshStandardMaterial color="#1a1a1e" />
+        <PBRMaterial preset="blackMatte" />
       </mesh>
     </group>
   )

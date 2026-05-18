@@ -1,4 +1,5 @@
 import { Shell } from './shared/shells'
+import { PBRMaterial } from './shared/materials'
 import type { Material } from '@mig/modules-schema'
 
 const PEG_COLORS = ['#FF6B35', '#00D26A', '#4A90FF', '#F5B544']
@@ -23,7 +24,7 @@ export function KidsLab({ material, w, h, d }: { material: Material; w: number; 
       })}
       <mesh position={[w * 0.35, h * 0.4, d / 2 + 0.025]}>
         <planeGeometry args={[0.85, 2.05]} />
-        <meshStandardMaterial color="#FF6B35" />
+        <PBRMaterial preset="terracottaTile" />
       </mesh>
     </group>
   )
