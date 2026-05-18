@@ -1,7 +1,7 @@
 export type Locale = 'ru' | 'en' | 'ka'
 
 const ru: Record<string, string> = {
-  'app.subtitle': 'v0.7 · Wave 7',
+  'app.subtitle': 'v0.8 · Wave 8',
   'panel.modules': 'Модули', 'panel.price': 'Стоимость', 'panel.timeline': 'Тайминг', 'panel.shortcuts': 'Горячие клавиши',
   'mat.container': 'Контейнер', 'mat.timber': 'Дерево', 'mat.hybrid': 'Гибрид', 'mat.any': 'Любой',
   'price.modules': 'Модули', 'price.delivery': 'Доставка', 'price.earthworks': 'Земляные работы', 'price.assembly': 'Сборка', 'price.total': 'Итого',
@@ -30,10 +30,16 @@ const ru: Record<string, string> = {
   'compare.title': 'Сравнение', 'compare.open': 'Открыть', 'compare.close': 'Закрыть', 'compare.swap': 'Местами', 'compare.snapshotA': 'Снимок A', 'compare.snapshotB': 'Снимок B', 'compare.emptyA': 'Сделай снимок A', 'compare.emptyB': 'Сделай снимок B',
   'annotations.title': 'Заметки', 'annotations.add': 'Добавить', 'annotations.clear': 'Очистить', 'annotations.shown': 'Видны', 'annotations.hidden': 'Скрыты', 'annotations.placeholder': 'Текст заметки',
   'physics.title': 'Физика крана', 'physics.on': 'ВКЛ', 'physics.off': 'ВЫКЛ', 'physics.dropAll': 'Сбросить всё',
+  'ar.enter': 'AR режим', 'ar.requesting': 'Запуск…', 'ar.active': 'AR активен', 'ar.unsupported': 'AR не поддерживается', 'ar.denied': 'Отказано',
+  'realtime.online': 'Онлайн', 'realtime.offline': 'Offline (Supabase не настроен)', 'realtime.connecting': 'Подключение…', 'realtime.peers': 'польз.',
+  'cinematic.title': 'Кино и AR', 'cinematic.off': 'ВЫКЛ', 'cinematic.walkthrough': 'Прогулка', 'cinematic.drone': 'Дрон', 'cinematic.orbit': 'Орбита',
+  'cinematic.speed': 'Скорость', 'cinematic.radius': 'Радиус', 'cinematic.height': 'Высота',
+  'cinematic.eyeHeight': 'Высота глаз', 'cinematic.walkSpeed': 'Скорость ходьбы',
+  'deploy.title': 'Деплой', 'deploy.button': 'На Vercel', 'deploy.docs': 'Инструкция',
 }
 
 const en: Record<string, string> = {
-  'app.subtitle': 'v0.7 · Wave 7',
+  'app.subtitle': 'v0.8 · Wave 8',
   'panel.modules': 'Modules', 'panel.price': 'Price', 'panel.timeline': 'Timeline', 'panel.shortcuts': 'Shortcuts',
   'mat.container': 'Container', 'mat.timber': 'Timber', 'mat.hybrid': 'Hybrid', 'mat.any': 'Any',
   'price.modules': 'Modules', 'price.delivery': 'Delivery', 'price.earthworks': 'Earthworks', 'price.assembly': 'Assembly', 'price.total': 'Total',
@@ -62,10 +68,16 @@ const en: Record<string, string> = {
   'compare.title': 'Compare', 'compare.open': 'Open', 'compare.close': 'Close', 'compare.swap': 'Swap', 'compare.snapshotA': 'Snapshot A', 'compare.snapshotB': 'Snapshot B', 'compare.emptyA': 'Make snapshot A', 'compare.emptyB': 'Make snapshot B',
   'annotations.title': 'Notes', 'annotations.add': 'Add', 'annotations.clear': 'Clear', 'annotations.shown': 'Shown', 'annotations.hidden': 'Hidden', 'annotations.placeholder': 'Note text',
   'physics.title': 'Crane physics', 'physics.on': 'ON', 'physics.off': 'OFF', 'physics.dropAll': 'Drop all',
+  'ar.enter': 'Enter AR', 'ar.requesting': 'Starting…', 'ar.active': 'AR active', 'ar.unsupported': 'AR unsupported', 'ar.denied': 'Denied',
+  'realtime.online': 'Online', 'realtime.offline': 'Offline (Supabase not set)', 'realtime.connecting': 'Connecting…', 'realtime.peers': 'users',
+  'cinematic.title': 'Cinematic & AR', 'cinematic.off': 'OFF', 'cinematic.walkthrough': 'Walk', 'cinematic.drone': 'Drone', 'cinematic.orbit': 'Orbit',
+  'cinematic.speed': 'Speed', 'cinematic.radius': 'Radius', 'cinematic.height': 'Height',
+  'cinematic.eyeHeight': 'Eye height', 'cinematic.walkSpeed': 'Walk speed',
+  'deploy.title': 'Deploy', 'deploy.button': 'To Vercel', 'deploy.docs': 'Guide',
 }
 
 const ka: Record<string, string> = {
-  'app.subtitle': 'v0.7 · Wave 7',
+  'app.subtitle': 'v0.8 · Wave 8',
   'panel.modules': 'მოდულები', 'panel.price': 'ფასი', 'panel.timeline': 'ვადები', 'panel.shortcuts': 'მალსახმობები',
   'mat.container': 'კონტეინერი', 'mat.timber': 'ხე', 'mat.hybrid': 'ჰიბრიდი', 'mat.any': 'ნებისმიერი',
   'price.modules': 'მოდულები', 'price.delivery': 'მიწოდება', 'price.earthworks': 'მიწის სამუშაოები', 'price.assembly': 'მონტაჟი', 'price.total': 'სულ',
@@ -91,9 +103,15 @@ const ka: Record<string, string> = {
   'cost.reset': 'მულტიპლიკატორების გასუფთავება',
   'w7.title': 'სტუდიო',
   'templates.title': 'შაბლონები', 'templates.open': 'გალერეა', 'templates.apply': 'გამოყენება',
-  'compare.title': 'შედარება', 'compare.open': 'გახსნა', 'compare.close': 'დახურვა', 'compare.swap': 'გაცვლა', 'compare.snapshotA': 'სნაპშოტი A', 'compare.snapshotB': 'სნაპშოტი B', 'compare.emptyA': 'გააკეთეთ A', 'compare.emptyB': 'გააკეთეთ B',
+  'compare.title': 'შედარება', 'compare.open': 'გახსნა', 'compare.close': 'დახურვა', 'compare.swap': 'გაცვლა', 'compare.snapshotA': 'სნაპშოტი A', 'compare.snapshotB': 'სნაპშოტი B', 'compare.emptyA': 'A სნაპშოტი', 'compare.emptyB': 'B სნაპშოტი',
   'annotations.title': 'შენიშვნები', 'annotations.add': 'დამატება', 'annotations.clear': 'გასუფთავება', 'annotations.shown': 'ჩანს', 'annotations.hidden': 'დამალულია', 'annotations.placeholder': 'ტექსტი',
-  'physics.title': 'ოდის ფიზიკა', 'physics.on': 'ON', 'physics.off': 'OFF', 'physics.dropAll': 'დაცემა',
+  'physics.title': 'ამწის ფიზიკა', 'physics.on': 'ON', 'physics.off': 'OFF', 'physics.dropAll': 'დაცემა',
+  'ar.enter': 'AR რეჟიმი', 'ar.requesting': 'გაშვება…', 'ar.active': 'AR აქტიური', 'ar.unsupported': 'AR არ მუშაობს', 'ar.denied': 'უარყოფილია',
+  'realtime.online': 'ონლაინ', 'realtime.offline': 'Offline (Supabase არ არის)', 'realtime.connecting': 'დაკავშირება…', 'realtime.peers': 'მომხმარ.',
+  'cinematic.title': 'კინო და AR', 'cinematic.off': 'OFF', 'cinematic.walkthrough': 'სიარული', 'cinematic.drone': 'დრონი', 'cinematic.orbit': 'ორბიტა',
+  'cinematic.speed': 'სიჩქარე', 'cinematic.radius': 'რადიუსი', 'cinematic.height': 'სიმაღლე',
+  'cinematic.eyeHeight': 'თვალის სიმაღლე', 'cinematic.walkSpeed': 'სიარულის სიჩქარე',
+  'deploy.title': 'დეპლოი', 'deploy.button': 'Vercel-ზე', 'deploy.docs': 'ინსტრუქცია',
 }
 
 const dict: Record<Locale, Record<string, string>> = { ru, en, ka }

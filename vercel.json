@@ -1,0 +1,22 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "pnpm turbo run build --filter=web",
+  "installCommand": "pnpm install --frozen-lockfile=false",
+  "framework": "nextjs",
+  "outputDirectory": "apps/web/.next",
+  "github": {
+    "silent": true,
+    "autoJobCancelation": true
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "camera=(self), microphone=(), geolocation=(self), xr-spatial-tracking=(self)" }
+      ]
+    }
+  ]
+}

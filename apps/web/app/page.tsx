@@ -10,6 +10,7 @@ import { KeyboardHelp } from '@/components/configurator/KeyboardHelp'
 import { WorldPanel } from '@/components/controls/WorldPanel'
 import { ProPanel } from '@/components/controls/ProPanel'
 import { TemplatesPanel } from '@/components/controls/TemplatesPanel'
+import { CinematicPanel } from '@/components/controls/CinematicPanel'
 import { CompareView } from '@/components/ui/CompareView'
 import { Header } from '@/components/header/Header'
 import { useConfigurator } from '@/stores/configurator'
@@ -85,6 +86,7 @@ export default function HomePage() {
           <WorldPanel />
           <ProPanel />
           <TemplatesPanel />
+          <CinematicPanel />
           <PricePanel />
           {selectionId && <SelectionPanel />}
         </div>
