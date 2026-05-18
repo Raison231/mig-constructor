@@ -3,6 +3,13 @@
 import { Html } from '@react-three/drei'
 import { useAnnotations } from '@/stores/annotations'
 
+const NOTE_STYLE = {
+  background: 'rgba(10, 10, 11, 0.85)',
+  color: '#F5F5F7',
+  borderColor: 'rgba(0, 210, 106, 0.5)',
+  maxWidth: 200,
+}
+
 export function AnnotationLayer() {
   const active = useAnnotations((s) => s.active)
   const list = useAnnotations((s) => s.list)
@@ -21,7 +28,7 @@ export function AnnotationLayer() {
           <Html distanceFactor={10} position={[0, 0.5, 0]} center>
             <div
               className="pointer-events-auto select-none rounded-md border px-2 py-1 text-xs shadow-lg backdrop-blur"
-              style= background: 'rgba(20,20,23,0.85)', borderColor: a.color, color: '#F5F5F7', maxWidth: 200 
+              style={NOTE_STYLE}
             >
               <button
                 type="button"
