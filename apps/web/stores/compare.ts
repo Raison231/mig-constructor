@@ -1,41 +1,29 @@
-'use client'
-
 import { create } from 'zustand'
-import type { ModuleInstance } from '@/stores/configurator'
+import type { ModuleInstance } from '@mig/modules-schema'
 
-export type CompareSnapshot = {
-	name: string
-	instances: ModuleInstance[]
-	timestamp: number
-}
-
-type CompareState = {
-	active: boolean
-	snapshotA: CompareSnapshot | null
-	snapshotB: CompareSnapshot | null
-	activePane: 'A' | 'B'
-	toggle: () => void
-	setActivePane: (pane: 'A' | 'B') => void
-	captureA: (instances: ModuleInstance[], name?: string) => void
-	captureB: (instances: ModuleInstance[], name?: string) => void
-	swap: () => void
-	clear: () => void
+interface CompareState {
+  active: boolean
+  snapshotA: ModuleInstance[] | null
+  snapshotB: ModuleInstance[] | null
+  setActive: (v: boolean) => void
+  snapshotToA: (instances: ModuleInstance[]) => void
+  snapshotToB: (instances: ModuleInstance[]) => void
+  swap: () => void
+  clear: () => void
 }
 
 export const useCompare = create<CompareState>((set, get) => ({
-	active: false,
-	snapshotA: null,
-	snapshotB: null,
-	activePane: 'A',
-	toggle: () => set((s) => ({ active: !s.active })),
-	setActivePane: (pane) => set({ activePane: pane }),
-	captureA: (instances, name = 'Вариант A') =>
-		set({ snapshotA: { name, instances: instances.map((m) => ({ ...m })), timestamp: Date.now() } }),
-	captureB: (instances, name = 'Вариант B') =>
-		set({ snapshotB: { name, instances: instances.map((m) => ({ ...m })), timestamp: Date.now() } }),
-	swap: () => {
-		const { snapshotA, snapshotB } = get()
-		set({ snapshotA: snapshotB, snapshotB: snapshotA })
-	},
-	clear: () => set({ snapshotA: null, snapshotB: null, active: false, activePane: 'A' }),
+  active: false,
+  snapshotA: null,
+  snapshotB: null,
+  setActive: (v) => set({ active: v }),
+  snapshotToA: (instances) =>
+    set({ snapshotA: instances.map((i) => ({ ...i, position: [...i.position] as [number, number, number] })) }),
+  snapshotToB: (instances) =>
+    set({ snapshotB: instances.map((i) => ({ ...i, position: [...i.position] as [number, number, number] })) }),
+  swap: () => {
+    const { snapshotA, snapshotB } = get()
+    set({ snapshotA: snapshotB, snapshotB: snapshotA })
+  },
+  clear: () => set({ snapshotA: null, snapshotB: null, active: false }),
 }))

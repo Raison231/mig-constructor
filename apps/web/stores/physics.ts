@@ -1,25 +1,21 @@
-'use client'
-
 import { create } from 'zustand'
 
-type PhysicsState = {
-	active: boolean
-	dropping: boolean
-	craneSpeed: number // m/s descent
-	toggle: () => void
-	setActive: (v: boolean) => void
-	startDrop: () => void
-	endDrop: () => void
-	setSpeed: (v: number) => void
+interface PhysicsState {
+  active: boolean
+  dropQueue: string[] // instanceIds queued to drop
+  setActive: (v: boolean) => void
+  enqueueDrop: (instanceIds: string[]) => void
+  clearQueue: () => void
+  dropAll: () => void // sets a flag; consumed by Scene
+  dropAllSignal: number
 }
 
 export const usePhysics = create<PhysicsState>((set) => ({
-	active: false,
-	dropping: false,
-	craneSpeed: 2.5,
-	toggle: () => set((s) => ({ active: !s.active, dropping: false })),
-	setActive: (v) => set({ active: v, dropping: false }),
-	startDrop: () => set({ dropping: true }),
-	endDrop: () => set({ dropping: false }),
-	setSpeed: (v) => set({ craneSpeed: Math.max(0.5, Math.min(10, v)) }),
+  active: false,
+  dropQueue: [],
+  dropAllSignal: 0,
+  setActive: (v) => set({ active: v }),
+  enqueueDrop: (instanceIds) => set((s) => ({ dropQueue: [...s.dropQueue, ...instanceIds] })),
+  clearQueue: () => set({ dropQueue: [] }),
+  dropAll: () => set((s) => ({ dropAllSignal: s.dropAllSignal + 1 })),
 }))

@@ -1,156 +1,136 @@
-import type { ModuleInstance } from '@/stores/configurator'
+import type { ModuleInstance } from '@mig/modules-schema'
 
-export type TemplateId =
-	| 'studio'
-	| 'family'
-	| 'office'
-	| 'workshop'
-	| 'glamping'
-	| 'hub'
+export type TemplatePresetId =
+  | 'studio'
+  | 'family'
+  | 'office'
+  | 'workshop'
+  | 'glamping'
+  | 'hub'
 
-export type TemplatePreset = {
-	id: TemplateId
-	nameRu: string
-	nameEn: string
-	nameKa: string
-	descRu: string
-	descEn: string
-	descKa: string
-	icon: string
-	areaM2: number
-	layout: ModuleInstance[]
+export interface TemplatePreset {
+  id: TemplatePresetId
+  nameRu: string
+  nameEn: string
+  nameKa: string
+  descriptionRu: string
+  descriptionEn: string
+  icon: string
+  instances: ModuleInstance[]
 }
 
-// Хелпер: расставляем модули в линию вдоль X со смещением Z для крыла
+// Helper to build instance
 const inst = (
-	moduleId: string,
-	material: 'container' | 'timber' | 'hybrid',
-	position: [number, number, number],
-	rotationY = 0,
-	instanceId?: string
+  idx: number,
+  moduleId: string,
+  material: 'container' | 'timber' | 'hybrid',
+  x: number,
+  z: number,
+  rotationY = 0,
 ): ModuleInstance => ({
-	instanceId: instanceId ?? `preset-${moduleId}-${position.join('-')}`,
-	moduleId,
-	material,
-	position,
-	rotationY,
+  instanceId: `preset-${moduleId}-${idx}`,
+  moduleId,
+  material,
+  position: [x, 0, z],
+  rotationY,
 })
 
 export const TEMPLATE_PRESETS: TemplatePreset[] = [
-	{
-		id: 'studio',
-		nameRu: 'Студия',
-		nameEn: 'Studio',
-		nameKa: 'სტუდია',
-		descRu: 'Минимализм: ядро + санузел + терраса',
-		descEn: 'Minimal: core + bath + deck',
-		descKa: 'მინიმალისტური: ბირთვი + სველი + ტერასა',
-		icon: '🏕️',
-		areaM2: 28,
-		layout: [
-			inst('core', 'timber', [0, 0, 0]),
-			inst('bathroom', 'timber', [3.5, 0, 0]),
-			inst('deck', 'timber', [-3.5, 0, 0]),
-		],
-	},
-	{
-		id: 'family',
-		nameRu: 'Семейный',
-		nameEn: 'Family',
-		nameKa: 'საოჯახო',
-		descRu: 'Двухкрылый: 2 спальни + кухня + гостиная + санузел',
-		descEn: 'Two wings: 2 bedrooms + kitchen + living + bath',
-		descKa: 'ორი ფრთა: 2 საძინებელი + სამზარეულო + სასტუმრო + სველი',
-		icon: '🏡',
-		areaM2: 72,
-		layout: [
-			inst('core', 'hybrid', [0, 0, 0]),
-			inst('kitchen', 'hybrid', [3.5, 0, 0]),
-			inst('bedroom', 'hybrid', [-3.5, 0, 0]),
-			inst('bedroom', 'hybrid', [-7, 0, 0], 0, 'preset-bedroom-2'),
-			inst('bathroom', 'hybrid', [0, 0, 3.5]),
-			inst('deck', 'timber', [3.5, 0, 3.5]),
-		],
-	},
-	{
-		id: 'office',
-		nameRu: 'Офис',
-		nameEn: 'Office',
-		nameKa: 'ოფისი',
-		descRu: 'Рабочее пространство: опен-спейс + переговорка + кухня',
-		descEn: 'Workspace: open-space + meeting + kitchen',
-		descKa: 'სამუშაო სივრცე: ღია სივრცე + შეხვედრები + სამზარეულო',
-		icon: '💼',
-		areaM2: 64,
-		layout: [
-			inst('hub-core', 'container', [0, 0, 0]),
-			inst('office', 'container', [3.5, 0, 0]),
-			inst('office', 'container', [-3.5, 0, 0], 0, 'preset-office-2'),
-			inst('kitchen', 'hybrid', [0, 0, 3.5]),
-			inst('solar-tower', 'hybrid', [7, 0, 0]),
-		],
-	},
-	{
-		id: 'workshop',
-		nameRu: 'Мастерская',
-		nameEn: 'Workshop',
-		nameKa: 'სახელოსნო',
-		descRu: 'Производственная: цех + офис + склад + солнечная башня',
-		descEn: 'Production: workshop + office + storage + solar tower',
-		descKa: 'საწარმოო: სახელოსნო + ოფისი + საწყობი + მზის კოშკი',
-		icon: '🔧',
-		areaM2: 96,
-		layout: [
-			inst('workshop', 'container', [0, 0, 0]),
-			inst('office', 'container', [3.5, 0, 0]),
-			inst('storage', 'container', [-3.5, 0, 0]),
-			inst('solar-tower', 'hybrid', [0, 0, 3.5]),
-			inst('water-tank', 'container', [3.5, 0, 3.5]),
-		],
-	},
-	{
-		id: 'glamping',
-		nameRu: 'Глэмпинг',
-		nameEn: 'Glamping',
-		nameKa: 'გლემპინგი',
-		descRu: '3 капсулы + сауна + общая зона + терраса с видом',
-		descEn: '3 capsules + sauna + common + view deck',
-		descKa: '3 კაფსულა + საუნა + საერთო + ხედი',
-		icon: '🏞️',
-		areaM2: 84,
-		layout: [
-			inst('capsule', 'timber', [0, 0, 0]),
-			inst('capsule', 'timber', [3.5, 0, 0], 0, 'preset-capsule-2'),
-			inst('capsule', 'timber', [-3.5, 0, 0], 0, 'preset-capsule-3'),
-			inst('sauna', 'timber', [0, 0, 3.5]),
-			inst('core', 'timber', [3.5, 0, 3.5]),
-			inst('deck', 'timber', [-3.5, 0, 3.5]),
-			inst('well-cap', 'timber', [7, 0, 0]),
-		],
-	},
-	{
-		id: 'hub',
-		nameRu: 'Хаб',
-		nameEn: 'Hub',
-		nameKa: 'ჰაბი',
-		descRu: 'Коммуна: общий хаб + 4 жилых крыла + солнечная + вода',
-		descEn: 'Commune: hub + 4 living wings + solar + water',
-		descKa: 'კომუნა: ჰაბი + 4 საცხოვრებელი + მზე + წყალი',
-		icon: '🏛️',
-		areaM2: 168,
-		layout: [
-			inst('hub-core', 'hybrid', [0, 0, 0]),
-			inst('bedroom', 'hybrid', [3.5, 0, 0]),
-			inst('bedroom', 'hybrid', [-3.5, 0, 0], 0, 'preset-hub-bed-2'),
-			inst('bedroom', 'hybrid', [0, 0, 3.5], 0, 'preset-hub-bed-3'),
-			inst('bedroom', 'hybrid', [0, 0, -3.5], 0, 'preset-hub-bed-4'),
-			inst('kitchen', 'hybrid', [3.5, 0, 3.5]),
-			inst('bathroom', 'hybrid', [-3.5, 0, 3.5]),
-			inst('sauna', 'timber', [-3.5, 0, -3.5]),
-			inst('solar-tower', 'hybrid', [7, 0, 0]),
-			inst('water-tank', 'container', [-7, 0, 0]),
-			inst('glass-bridge', 'hybrid', [3.5, 0, -3.5]),
-			inst('carport', 'container', [7, 0, 3.5]),
-		],
-	},
+  {
+    id: 'studio',
+    nameRu: 'Студия',
+    nameEn: 'Studio',
+    nameKa: 'სტუდია',
+    descriptionRu: 'Минимум: жилой блок + санузел + терраса',
+    descriptionEn: 'Minimal: living + bath + terrace',
+    icon: '🏠',
+    instances: [
+      inst(0, 'living', 'timber', 0, 0),
+      inst(1, 'bath', 'timber', 4, 0),
+      inst(2, 'terrace', 'timber', 0, 4),
+    ],
+  },
+  {
+    id: 'family',
+    nameRu: 'Семья',
+    nameEn: 'Family',
+    nameKa: 'ოჯახი',
+    descriptionRu: 'Гостиная + 2 спальни + кухня + санузел + терраса',
+    descriptionEn: 'Living + 2 bedrooms + kitchen + bath + terrace',
+    icon: '👨\u200d👩\u200d👧',
+    instances: [
+      inst(0, 'living', 'hybrid', 0, 0),
+      inst(1, 'kitchen', 'hybrid', 4, 0),
+      inst(2, 'bedroom', 'hybrid', 0, 4),
+      inst(3, 'bedroom', 'hybrid', 4, 4),
+      inst(4, 'bath', 'hybrid', -4, 0),
+      inst(5, 'terrace', 'hybrid', 0, -4),
+    ],
+  },
+  {
+    id: 'office',
+    nameRu: 'Офис',
+    nameEn: 'Office',
+    nameKa: 'ოფისი',
+    descriptionRu: 'Хаб + 2 рабочих + переговорка + санузел',
+    descriptionEn: 'Hub + 2 workspaces + meeting + bath',
+    icon: '💼',
+    instances: [
+      inst(0, 'hub-core', 'container', 0, 0),
+      inst(1, 'workspace', 'container', 4, 0),
+      inst(2, 'workspace', 'container', -4, 0),
+      inst(3, 'meeting', 'container', 0, 4),
+      inst(4, 'bath', 'container', 0, -4),
+    ],
+  },
+  {
+    id: 'workshop',
+    nameRu: 'Мастерская',
+    nameEn: 'Workshop',
+    nameKa: 'სახელოსნო',
+    descriptionRu: 'Мастерская + склад + санузел + солнечная башня',
+    descriptionEn: 'Workshop + storage + bath + solar tower',
+    icon: '🔧',
+    instances: [
+      inst(0, 'workshop', 'container', 0, 0),
+      inst(1, 'storage', 'container', 4, 0),
+      inst(2, 'bath', 'container', -4, 0),
+      inst(3, 'solar-tower', 'container', 0, 4),
+    ],
+  },
+  {
+    id: 'glamping',
+    nameRu: 'Глэмпинг',
+    nameEn: 'Glamping',
+    nameKa: 'გლემპინგი',
+    descriptionRu: '3 жилых модуля + санузлы + терраса + карпорт',
+    descriptionEn: '3 living units + baths + terrace + carport',
+    icon: '⛺',
+    instances: [
+      inst(0, 'living', 'timber', -6, 0),
+      inst(1, 'living', 'timber', 0, 0),
+      inst(2, 'living', 'timber', 6, 0),
+      inst(3, 'bath', 'timber', -6, 4),
+      inst(4, 'bath', 'timber', 6, 4),
+      inst(5, 'terrace', 'timber', 0, -4),
+      inst(6, 'carport', 'timber', 0, 8),
+    ],
+  },
+  {
+    id: 'hub',
+    nameRu: 'Хаб',
+    nameEn: 'Hub',
+    nameKa: 'ჰაბი',
+    descriptionRu: 'Большой коммьюнити-хаб: центр + мост + 4 спутника',
+    descriptionEn: 'Community hub: core + bridge + 4 satellites',
+    icon: '🌐',
+    instances: [
+      inst(0, 'hub-core', 'hybrid', 0, 0),
+      inst(1, 'glass-bridge', 'hybrid', 4, 0, Math.PI / 2),
+      inst(2, 'living', 'hybrid', 8, 0),
+      inst(3, 'kitchen', 'hybrid', -4, 0),
+      inst(4, 'meeting', 'hybrid', 0, 4),
+      inst(5, 'workspace', 'hybrid', 0, -4),
+    ],
+  },
 ]

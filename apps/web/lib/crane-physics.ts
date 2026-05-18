@@ -1,50 +1,33 @@
-import type { ModuleInstance } from '@/stores/configurator'
+// Crane drop physics helpers for Rapier integration
+// Provides constants and helper functions for the drop-from-sky animation
 
-// Высота, с которой кран опускает модули (метры)
-export const CRANE_DROP_HEIGHT = 12
+export const DROP_HEIGHT = 12 // meters above ground
+export const DROP_DELAY_PER_MODULE = 350 // ms between drops in sequence
+export const GRAVITY: [number, number, number] = [0, -9.81, 0]
+export const RIGID_BODY_MASS = 2000 // kg per module (typical container)
+export const LINEAR_DAMPING = 1.2
+export const ANGULAR_DAMPING = 2.0
+export const RESTITUTION = 0.05 // very low bounce — modules are heavy
+export const FRICTION = 0.85
 
-// Гравитация поля (Rapier)
-export const FIELD_GRAVITY: [number, number, number] = [0, -9.81, 0]
-
-// Восстановление (упругость) при ударе об землю
-export const FIELD_RESTITUTION = 0.05
-
-// Демпфирование линейное/угловое — чтобы модули не катались бесконечно
-export const LINEAR_DAMPING = 0.8
-export const ANGULAR_DAMPING = 1.5
-
-export type CraneTarget = {
-	instanceId: string
-	spawnY: number // высота старта
-	finalPos: [number, number, number] // целевое положение (X, finalY, Z)
+// Compute drop position above the final resting place
+export function getDropOrigin(
+  finalPosition: [number, number, number],
+): [number, number, number] {
+  return [finalPosition[0], DROP_HEIGHT, finalPosition[2]]
 }
 
-/**
- * Преобразует ModuleInstance[] в очередь спавна для кран-физики.
- * Каждый модуль появляется на высоте CRANE_DROP_HEIGHT над своей целевой позицией.
- * Спавн с шагом, чтобы крановая последовательность была визуально читаема.
- */
-export function buildCraneQueue(
-	instances: ModuleInstance[],
-	dropHeight: number = CRANE_DROP_HEIGHT
-): CraneTarget[] {
-	return instances.map((m) => ({
-		instanceId: m.instanceId,
-		spawnY: dropHeight + Math.random() * 2,
-		finalPos: [m.position[0], m.position[1], m.position[2]],
-	}))
+// Easing curve for crane release
+export function craneEase(t: number): number {
+  // ease-in: slow at top, fast at bottom (gravity natural)
+  return t * t
 }
 
-/**
- * Интервал между спавнами модулей в крановой последовательности (мс).
- * Базируется на природном ритме дыхания (6/мин = 0.1 Гц = 10 сек),
-	 * но ускорен в 10 раз для UX. φ-делитель.
- */
-export const CRANE_SPAWN_INTERVAL_MS = 618 // 1000 / φ ≈ 618
-
-/**
- * Проверка, остановился ли модуль (по сумме модулей скоростей).
- */
-export function isAtRest(linvelMag: number, angvelMag: number): boolean {
-	return linvelMag < 0.05 && angvelMag < 0.05
-}
+// Default rigid body config for module physics
+export const RIGID_BODY_CONFIG = {
+  mass: RIGID_BODY_MASS,
+  linearDamping: LINEAR_DAMPING,
+  angularDamping: ANGULAR_DAMPING,
+  restitution: RESTITUTION,
+  friction: FRICTION,
+} as const
