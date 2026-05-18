@@ -24,10 +24,10 @@ export function PricePanel() {
       </div>
 
       <div className="space-y-1 text-xs">
-        <Row label={t('price.modules', locale)} value={fmt(breakdown.modules)} />
-        <Row label={t('price.delivery', locale)} value={fmt(breakdown.delivery)} />
-        <Row label={t('price.earthworks', locale)} value={fmt(breakdown.earthworks)} />
-        <Row label={t('price.assembly', locale)} value={fmt(breakdown.assembly)} />
+        <Row label={t('price.modules', locale)} value={fmt(breakdown.modulesCost)} />
+        <Row label={t('price.delivery', locale)} value={fmt(breakdown.deliveryCost)} />
+        <Row label={t('price.earthworks', locale)} value={fmt(breakdown.earthworksCost)} />
+        <Row label={t('price.assembly', locale)} value={fmt(breakdown.assemblyCost)} />
       </div>
 
       <div className="mt-3 border-t border-panel pt-3">
