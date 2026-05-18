@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf'
-import { modules, calculatePrice } from '@mig/modules-schema'
+import { modules } from '@mig/modules-schema'
+import { calculatePrice } from '@mig/pricing-engine'
 import type { ModuleInstance } from '@/stores/configurator'
 
 const USD_RATE = 0.37
