@@ -32,33 +32,36 @@ export function WorldPanel() {
   const temp = SITE_META[site].tempC
 
   return (
-    <div className="glass rounded-2xl p-3 space-y-3">
+    <div className="glass rounded-3xl p-3.5 space-y-3.5">
       <div className="flex items-center justify-between">
-        <h2 className="font-mono text-xs uppercase tracking-wider text-fg-secondary">{t('world.title', locale)}</h2>
-        <span className="text-[10px] text-fg-secondary">{hourLabel(hour)} · {temp}°C</span>
+        <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-ink3">{t('world.title', locale)}</div>
+        <div className="flex items-center gap-1.5">
+          <span className="rounded-full bg-brand-secondary/12 text-brand-secondary text-[10px] font-bold px-2 py-0.5 border border-brand-secondary/25">{hourLabel(hour)}</span>
+          <span className="rounded-full bg-brand-accent/15 text-[#8B4F00] text-[10px] font-bold px-2 py-0.5 border border-brand-accent/30">{temp}°C</span>
+        </div>
       </div>
 
       <div>
-        <div className="mb-1 text-[10px] text-fg-secondary">{t('world.sun', locale)}</div>
+        <div className="mb-1 text-[10px] text-ink3 font-medium">{t('world.sun', locale)}</div>
         <input
-          type="range"
-          min={0}
-          max={24}
-          step={0.25}
-          value={hour}
+          type="range" min={0} max={24} step={0.25} value={hour}
           onChange={(e) => setHour(parseFloat(e.target.value))}
-          className="w-full accent-accent-green"
+          className="aurora-range w-full"
         />
       </div>
 
       <div>
-        <div className="mb-1 text-[10px] text-fg-secondary">{t('world.weather', locale)}</div>
+        <div className="mb-1.5 text-[10px] text-ink3 font-medium">{t('world.weather', locale)}</div>
         <div className="grid grid-cols-4 gap-1">
           {WEATHERS.map((w) => (
             <button
               key={w}
               onClick={() => setWeather(w)}
-              className={`rounded-md py-1.5 text-base ${weather === w ? 'bg-accent-green text-bg' : 'bg-bg hover:bg-panel'}`}
+              className={`rounded-xl py-1.5 text-base border transition ${
+                weather === w
+                  ? 'border-brand-primary bg-brand-primary/15 shadow-aurora'
+                  : 'border-hairline bg-white/55 hover:bg-white'
+              }`}
               title={t(`weather.${w}`, locale)}
             >
               {WEATHER_ICON[w]}
@@ -68,13 +71,17 @@ export function WorldPanel() {
       </div>
 
       <div>
-        <div className="mb-1 text-[10px] text-fg-secondary">{t('world.site', locale)}</div>
+        <div className="mb-1.5 text-[10px] text-ink3 font-medium">{t('world.site', locale)}</div>
         <div className="grid grid-cols-2 gap-1">
           {SITES.map((s) => (
             <button
               key={s}
               onClick={() => setSite(s)}
-              className={`rounded-md py-1 text-[10px] ${site === s ? 'bg-accent-green text-bg' : 'bg-bg hover:bg-panel'}`}
+              className={`rounded-xl py-1.5 text-[10px] font-bold border transition ${
+                site === s
+                  ? 'border-brand-primary bg-brand-primary text-white shadow-aurora-primary'
+                  : 'border-hairline bg-white/55 text-ink hover:bg-white'
+              }`}
             >
               {t(`site.${s}`, locale)}
             </button>
@@ -83,13 +90,17 @@ export function WorldPanel() {
       </div>
 
       <div>
-        <div className="mb-1 text-[10px] text-fg-secondary">{t('world.camera', locale)}</div>
+        <div className="mb-1.5 text-[10px] text-ink3 font-medium">{t('world.camera', locale)}</div>
         <div className="grid grid-cols-4 gap-1">
           {CAMERAS.map((c) => (
             <button
               key={c}
               onClick={() => setCameraMode(c)}
-              className={`rounded-md py-1 text-[10px] ${cameraMode === c ? 'bg-accent-green text-bg' : 'bg-bg hover:bg-panel'}`}
+              className={`rounded-xl py-1.5 text-base border transition ${
+                cameraMode === c
+                  ? 'border-brand-field bg-brand-field/15 shadow-aurora'
+                  : 'border-hairline bg-white/55 hover:bg-white'
+              }`}
               title={t(`camera.${c}`, locale)}
             >
               {CAMERA_ICON[c]}
@@ -97,7 +108,7 @@ export function WorldPanel() {
           ))}
         </div>
         {cameraMode === 'interior' && (
-          <div className="mt-1 text-[9px] text-fg-secondary leading-tight">
+          <div className="mt-1.5 text-[9px] text-ink2 leading-tight">
             {t('camera.interiorHint', locale)}
           </div>
         )}

@@ -25,31 +25,30 @@ export function Header() {
 
   return (
     <header className="pointer-events-none absolute left-0 right-0 top-0 z-20 flex items-center justify-between p-6">
-      <div className="pointer-events-auto flex items-center gap-2">
-        <div className="h-8 w-8 rounded-lg bg-accent-green" />
-        <span className="font-mono text-sm font-semibold tracking-tight">MIG.CONSTRUCTOR</span>
-        <span className="ml-2 rounded-md bg-panel px-2 py-0.5 text-xs text-fg-secondary">
-          {t('app.subtitle', locale)}
-        </span>
+      <div className="pointer-events-auto flex items-center gap-3">
+        <div className="aurora-glow relative h-10 w-10 rounded-2xl bg-gradient-to-br from-brand-primary via-brand-secondary to-brand-field shadow-aurora-primary flex items-center justify-center">
+          <span className="text-white text-lg font-extrabold drop-shadow">M</span>
+        </div>
+        <div className="flex flex-col leading-tight">
+          <span className="font-mono text-[13px] font-semibold tracking-[0.04em] text-ink">MIG.CONSTRUCTOR</span>
+          <span className="mt-0.5 text-[10px] tracking-wider text-ink3 uppercase">{t('app.subtitle', locale)}</span>
+        </div>
+        <span className="ml-2 rounded-full bg-brand-primary/10 text-brand-primary px-2.5 py-0.5 text-[10px] font-semibold tracking-wide border border-brand-primary/20">AURORA · v0.9</span>
       </div>
 
-      <div className="pointer-events-auto flex items-center gap-2 text-xs">
-        <button onClick={share} className="glass rounded-lg px-3 py-1.5 hover:bg-panel">
-          {t('header.share', locale)}
-        </button>
-        <button onClick={downloadSceneScreenshot} className="glass rounded-lg px-3 py-1.5 hover:bg-panel">
-          {t('header.screenshot', locale)}
-        </button>
-        <button onClick={reset} className="glass rounded-lg px-3 py-1.5 text-accent-orange hover:bg-panel">
-          {t('header.reset', locale)}
-        </button>
+      <div className="pointer-events-auto flex items-center gap-2">
+        <button onClick={share} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white transition">⤴ {t('header.share', locale)}</button>
+        <button onClick={downloadSceneScreenshot} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white transition">⎙ {t('header.screenshot', locale)}</button>
+        <button onClick={reset} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-brand-coral hover:bg-brand-coral hover:text-white transition">⟲ {t('header.reset', locale)}</button>
 
-        <div className="ml-2 flex gap-1 rounded-lg bg-panel p-1">
+        <div className="ml-2 flex gap-0.5 rounded-full glass p-1">
           {LOCALES.map((l) => (
             <button
               key={l}
               onClick={() => setLocale(l)}
-              className={`rounded-md px-2 py-1 text-[10px] ${locale === l ? 'bg-accent-green text-bg' : 'text-fg-secondary hover:text-fg'}`}
+              className={`rounded-full px-2.5 py-1 text-[10px] font-bold transition ${
+                locale === l ? 'bg-brand-primary text-white shadow-aurora-primary' : 'text-ink2 hover:text-ink'
+              }`}
             >
               {LOCALE_LABELS[l]}
             </button>
@@ -58,7 +57,7 @@ export function Header() {
       </div>
 
       {toast && (
-        <div className="pointer-events-none absolute left-1/2 top-20 -translate-x-1/2 rounded-lg bg-accent-green px-4 py-2 text-xs font-medium text-bg">
+        <div className="pointer-events-none absolute left-1/2 top-20 -translate-x-1/2 animate-fade-up rounded-full bg-brand-primary px-4 py-2 text-xs font-semibold text-white shadow-aurora-primary">
           {toast}
         </div>
       )}

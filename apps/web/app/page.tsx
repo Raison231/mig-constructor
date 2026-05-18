@@ -13,6 +13,7 @@ import { TemplatesPanel } from '@/components/controls/TemplatesPanel'
 import { CinematicPanel } from '@/components/controls/CinematicPanel'
 import { CompareView } from '@/components/ui/CompareView'
 import { Header } from '@/components/header/Header'
+import { ClientOnly } from '@/components/util/ClientOnly'
 import { useConfigurator } from '@/stores/configurator'
 import { useLocale } from '@/stores/locale'
 import { t } from '@mig/i18n'
@@ -46,14 +47,18 @@ export default function HomePage() {
     }
   }, [setLayout])
 
+  // url-state sync с дебаунсом — фикс "Throttling navigation"
   useEffect(() => {
     if (typeof window === 'undefined') return
-    if (modules.length === 0) {
-      if (window.location.hash) history.replaceState(null, '', window.location.pathname)
-      return
-    }
-    const h = encodeLayout(modules)
-    history.replaceState(null, '', `#layout=${h}`)
+    const id = window.setTimeout(() => {
+      if (modules.length === 0) {
+        if (window.location.hash) history.replaceState(null, '', window.location.pathname)
+        return
+      }
+      const h = encodeLayout(modules)
+      history.replaceState(null, '', `#layout=${h}`)
+    }, 280)
+    return () => window.clearTimeout(id)
   }, [modules])
 
   useEffect(() => {
@@ -74,33 +79,38 @@ export default function HomePage() {
   }, [rotate, duplicate, remove, undo, redo])
 
   return (
-    <main className="relative h-screen w-screen overflow-hidden bg-bg">
+    <main className="relative h-screen w-screen overflow-hidden bg-canvas aurora-mesh">
       <Scene />
-      <Header />
 
-      <div className="pointer-events-none absolute inset-0 z-10">
-        <div className="pointer-events-auto absolute left-6 top-24 bottom-24 w-72">
-          <ModulePanel />
-        </div>
-        <div className="pointer-events-auto absolute right-6 top-24 w-80 space-y-3 max-h-[calc(100vh-10rem)] overflow-y-auto">
-          <WorldPanel />
-          <ProPanel />
-          <TemplatesPanel />
-          <CinematicPanel />
-          <PricePanel />
-          {selectionId && <SelectionPanel />}
-        </div>
-        <div className="pointer-events-auto absolute bottom-6 left-6 right-[26rem]">
-          <Timeline />
-        </div>
-        <div className="pointer-events-auto absolute bottom-6 right-6 w-72">
-          <KeyboardHelp />
-        </div>
-      </div>
+      {/* Весь интерактивный overlay живёт ТОЛЬКО на клиенте — это закрывает класс
+          hydration mismatch'ей от persisted Zustand-сторов (modules, locale, world, etc.) */}
+      <ClientOnly>
+        <Header />
 
-      <CompareView />
+        <div className="pointer-events-none absolute inset-0 z-10">
+          <div className="pointer-events-auto absolute left-6 top-24 bottom-24 w-72 animate-fade-up">
+            <ModulePanel />
+          </div>
+          <div className="pointer-events-auto absolute right-6 top-24 w-80 space-y-3 max-h-[calc(100vh-10rem)] overflow-y-auto animate-fade-up">
+            <WorldPanel />
+            <ProPanel />
+            <TemplatesPanel />
+            <CinematicPanel />
+            <PricePanel />
+            {selectionId && <SelectionPanel />}
+          </div>
+          <div className="pointer-events-auto absolute bottom-6 left-6 right-[26rem] animate-fade-up">
+            <Timeline />
+          </div>
+          <div className="pointer-events-auto absolute bottom-6 right-6 w-72 animate-fade-up">
+            <KeyboardHelp />
+          </div>
+        </div>
 
-      <noscript className="absolute inset-0 flex items-center justify-center text-fg">
+        <CompareView />
+      </ClientOnly>
+
+      <noscript className="absolute inset-0 flex items-center justify-center text-ink2">
         {t('loading.scene', locale)}
       </noscript>
     </main>

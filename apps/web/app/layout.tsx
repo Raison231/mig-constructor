@@ -12,12 +12,15 @@ export const metadata: Metadata = {
     description: 'Собери дом как LEGO. Real-time 3D + цена + сроки.',
     type: 'website',
   },
+  themeColor: '#F8F9FC',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ru" className={`${GeistSans.variable} ${GeistMono.variable}`}>
-      <body className="font-sans antialiased">{children}</body>
+    <html lang="ru" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
+      <body className="font-sans antialiased aurora-mesh text-ink" suppressHydrationWarning>
+        {children}
+      </body>
     </html>
   )
 }
