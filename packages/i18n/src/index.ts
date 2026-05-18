@@ -1,7 +1,7 @@
 export type Locale = 'ru' | 'en' | 'ka'
 
 const ru: Record<string, string> = {
-  'app.subtitle': 'v0.6 · Wave 6',
+  'app.subtitle': 'v0.7 · Wave 7',
   'panel.modules': 'Модули', 'panel.price': 'Стоимость', 'panel.timeline': 'Тайминг', 'panel.shortcuts': 'Горячие клавиши',
   'mat.container': 'Контейнер', 'mat.timber': 'Дерево', 'mat.hybrid': 'Гибрид', 'mat.any': 'Любой',
   'price.modules': 'Модули', 'price.delivery': 'Доставка', 'price.earthworks': 'Земляные работы', 'price.assembly': 'Сборка', 'price.total': 'Итого',
@@ -25,10 +25,15 @@ const ru: Record<string, string> = {
   'energy.lowAutonomy': '⚠ Низкая автономность — добавь Solar Tower или Carport',
   'cost.material': 'Премиум материалов', 'cost.location': 'Сложность участка', 'cost.rush': 'Срочность',
   'cost.reset': 'Сбросить множители',
+  'w7.title': 'Студия',
+  'templates.title': 'Шаблоны', 'templates.open': 'Открыть галерею', 'templates.apply': 'Применить',
+  'compare.title': 'Сравнение', 'compare.open': 'Открыть', 'compare.close': 'Закрыть', 'compare.swap': 'Местами', 'compare.snapshotA': 'Снимок A', 'compare.snapshotB': 'Снимок B', 'compare.emptyA': 'Сделай снимок A', 'compare.emptyB': 'Сделай снимок B',
+  'annotations.title': 'Заметки', 'annotations.add': 'Добавить', 'annotations.clear': 'Очистить', 'annotations.shown': 'Видны', 'annotations.hidden': 'Скрыты', 'annotations.placeholder': 'Текст заметки',
+  'physics.title': 'Физика крана', 'physics.on': 'ВКЛ', 'physics.off': 'ВЫКЛ', 'physics.dropAll': 'Сбросить всё',
 }
 
 const en: Record<string, string> = {
-  'app.subtitle': 'v0.6 · Wave 6',
+  'app.subtitle': 'v0.7 · Wave 7',
   'panel.modules': 'Modules', 'panel.price': 'Price', 'panel.timeline': 'Timeline', 'panel.shortcuts': 'Shortcuts',
   'mat.container': 'Container', 'mat.timber': 'Timber', 'mat.hybrid': 'Hybrid', 'mat.any': 'Any',
   'price.modules': 'Modules', 'price.delivery': 'Delivery', 'price.earthworks': 'Earthworks', 'price.assembly': 'Assembly', 'price.total': 'Total',
@@ -52,16 +57,21 @@ const en: Record<string, string> = {
   'energy.lowAutonomy': '⚠ Low autonomy — add Solar Tower or Carport',
   'cost.material': 'Material premium', 'cost.location': 'Site difficulty', 'cost.rush': 'Rush factor',
   'cost.reset': 'Reset multipliers',
+  'w7.title': 'Studio',
+  'templates.title': 'Templates', 'templates.open': 'Open gallery', 'templates.apply': 'Apply',
+  'compare.title': 'Compare', 'compare.open': 'Open', 'compare.close': 'Close', 'compare.swap': 'Swap', 'compare.snapshotA': 'Snapshot A', 'compare.snapshotB': 'Snapshot B', 'compare.emptyA': 'Make snapshot A', 'compare.emptyB': 'Make snapshot B',
+  'annotations.title': 'Notes', 'annotations.add': 'Add', 'annotations.clear': 'Clear', 'annotations.shown': 'Shown', 'annotations.hidden': 'Hidden', 'annotations.placeholder': 'Note text',
+  'physics.title': 'Crane physics', 'physics.on': 'ON', 'physics.off': 'OFF', 'physics.dropAll': 'Drop all',
 }
 
 const ka: Record<string, string> = {
-  'app.subtitle': 'v0.6 · Wave 6',
+  'app.subtitle': 'v0.7 · Wave 7',
   'panel.modules': 'მოდულები', 'panel.price': 'ფასი', 'panel.timeline': 'ვადები', 'panel.shortcuts': 'მალსახმობები',
   'mat.container': 'კონტეინერი', 'mat.timber': 'ხე', 'mat.hybrid': 'ჰიბრიდი', 'mat.any': 'ნებისმიერი',
   'price.modules': 'მოდულები', 'price.delivery': 'მიწოდება', 'price.earthworks': 'მიწის სამუშაოები', 'price.assembly': 'მონტაჟი', 'price.total': 'სულ',
   'timeline.survey': 'კვლევა + ნებართვები', 'timeline.earthworks': 'მიწის სამ. + ფუნდამენტი', 'timeline.factory': 'ქარხანა', 'timeline.delivery': 'მიწოდება + მონტაჟი', 'timeline.total': 'კვირა სულ',
-  'sel.rotate': 'მობრუნება', 'sel.duplicate': 'დუბლი', 'sel.delete': 'წაშლა', 'sel.deselect': 'არჩევის მოხსნა',
-  'shortcut.select': 'მოდულის არჩევა', 'shortcut.move': 'გადატანა', 'shortcut.rot': 'მობრუნება ±90°', 'shortcut.dup': 'დუბლი', 'shortcut.del': 'წაშლა', 'shortcut.undo': 'უკან', 'shortcut.redo': 'წინ',
+  'sel.rotate': 'მობრუნება', 'sel.duplicate': 'დუბლი', 'sel.delete': 'წაშლა', 'sel.deselect': 'არჭევის მოხსნა',
+  'shortcut.select': 'მოდულის არჭევა', 'shortcut.move': 'გადატანა', 'shortcut.rot': 'მობრუნება ±90°', 'shortcut.dup': 'დუბლი', 'shortcut.del': 'წაშლა', 'shortcut.undo': 'უკან', 'shortcut.redo': 'წინ',
   'header.share': 'გაზიარება', 'header.screenshot': 'სკრინშოტი', 'header.reset': 'გასუფთავება',
   'loading.scene': 'სცენის ჩატვირთვა…', 'share.copied': 'ბმული დაკოპირდა', 'share.failed': 'კოპირება ვერ მოხერხდა',
   'world.title': 'მსოფლიო', 'world.sun': 'მზე', 'world.weather': 'ამინდი', 'world.site': 'ლოკაცია', 'world.camera': 'კამერა',
@@ -79,6 +89,11 @@ const ka: Record<string, string> = {
   'energy.lowAutonomy': '⚠ დაბალი ავტონომია',
   'cost.material': 'მასალის პრემიუმი', 'cost.location': 'ადგილის სირთულე', 'cost.rush': 'სისწრაფე',
   'cost.reset': 'მულტიპლიკატორების გასუფთავება',
+  'w7.title': 'სტუდიო',
+  'templates.title': 'შაბლონები', 'templates.open': 'გალერეა', 'templates.apply': 'გამოყენება',
+  'compare.title': 'შედარება', 'compare.open': 'გახსნა', 'compare.close': 'დახურვა', 'compare.swap': 'გაცვლა', 'compare.snapshotA': 'სნაპშოტი A', 'compare.snapshotB': 'სნაპშოტი B', 'compare.emptyA': 'გააკეთეთ A', 'compare.emptyB': 'გააკეთეთ B',
+  'annotations.title': 'შენიშვნები', 'annotations.add': 'დამატება', 'annotations.clear': 'გასუფთავება', 'annotations.shown': 'ჩანს', 'annotations.hidden': 'დამალულია', 'annotations.placeholder': 'ტექსტი',
+  'physics.title': 'ოდის ფიზიკა', 'physics.on': 'ON', 'physics.off': 'OFF', 'physics.dropAll': 'დაცემა',
 }
 
 const dict: Record<Locale, Record<string, string>> = { ru, en, ka }
