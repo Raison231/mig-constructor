@@ -9,6 +9,8 @@ import { SelectionPanel } from '@/components/configurator/SelectionPanel'
 import { KeyboardHelp } from '@/components/configurator/KeyboardHelp'
 import { WorldPanel } from '@/components/controls/WorldPanel'
 import { ProPanel } from '@/components/controls/ProPanel'
+import { TemplatesPanel } from '@/components/controls/TemplatesPanel'
+import { CompareView } from '@/components/ui/CompareView'
 import { Header } from '@/components/header/Header'
 import { useConfigurator } from '@/stores/configurator'
 import { useLocale } from '@/stores/locale'
@@ -82,6 +84,7 @@ export default function HomePage() {
         <div className="pointer-events-auto absolute right-6 top-24 w-80 space-y-3 max-h-[calc(100vh-10rem)] overflow-y-auto">
           <WorldPanel />
           <ProPanel />
+          <TemplatesPanel />
           <PricePanel />
           {selectionId && <SelectionPanel />}
         </div>
@@ -92,6 +95,8 @@ export default function HomePage() {
           <KeyboardHelp />
         </div>
       </div>
+
+      <CompareView />
 
       <noscript className="absolute inset-0 flex items-center justify-center text-fg">
         {t('loading.scene', locale)}

@@ -3,6 +3,7 @@
 import { Canvas } from '@react-three/fiber'
 import { Grid } from '@react-three/drei'
 import { useConfigurator } from '@/stores/configurator'
+import { usePhysics } from '@/stores/physics'
 import { Module3D } from './Module3D'
 import { Ground } from './Ground'
 import { DragControls } from './DragControls'
@@ -12,6 +13,8 @@ import { Weather } from './Weather'
 import { SiteEnvironment } from './SiteEnvironment'
 import { CameraRig } from './CameraRig'
 import { MeasureTool } from './MeasureTool'
+import { CranePhysics } from './CranePhysics'
+import { AnnotationLayer } from './AnnotationLayer'
 
 const CAMERA_OPTS = { fov: 50, position: [14, 11, 14] as [number, number, number], near: 0.1, far: 200 }
 const GL_OPTS = { antialias: true, alpha: false, powerPreference: 'high-performance' as const, preserveDrawingBuffer: true }
@@ -21,6 +24,7 @@ const DPR: [number, number] = [1, 2]
 export function Scene() {
   const modules = useConfigurator((s) => s.modules)
   const deselect = useConfigurator((s) => s.deselect)
+  const physicsActive = usePhysics((s) => s.active)
 
   return (
     <Canvas
@@ -40,11 +44,14 @@ export function Scene() {
         sectionSize={5} sectionThickness={1} sectionColor="#00D26A"
         fadeDistance={30} fadeStrength={1.5} infiniteGrid
       />
-      {modules.map((m) => (
-        <Module3D key={m.instanceId} instance={m} />
-      ))}
+      {physicsActive ? (
+        <CranePhysics />
+      ) : (
+        modules.map((m) => <Module3D key={m.instanceId} instance={m} />)
+      )}
+      <AnnotationLayer />
       <SnapPreview />
-      <DragControls />
+      {!physicsActive && <DragControls />}
       <MeasureTool />
       <CameraRig />
     </Canvas>
