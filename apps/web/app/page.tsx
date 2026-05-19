@@ -11,6 +11,7 @@ import { WorldPanel } from '@/components/controls/WorldPanel'
 import { ProPanel } from '@/components/controls/ProPanel'
 import { TemplatesPanel } from '@/components/controls/TemplatesPanel'
 import { CinematicPanel } from '@/components/controls/CinematicPanel'
+import { WalkPanel } from '@/components/controls/WalkPanel'
 import { CompareView } from '@/components/ui/CompareView'
 import { Header } from '@/components/header/Header'
 import { LandPanel } from '@/components/header/LandPanel'
@@ -100,6 +101,7 @@ export default function HomePage() {
             <div className="pointer-events-auto absolute right-6 top-24 w-80 space-y-3 max-h-[calc(100vh-10rem)] overflow-y-auto animate-fade-up">
               <WorldPanel />
               <LandPanel />
+              <WalkPanel />
               <ProPanel />
               <TemplatesPanel />
               <CinematicPanel />
