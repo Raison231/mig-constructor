@@ -17,6 +17,10 @@ import { LandPanel } from '@/components/header/LandPanel'
 import { CopilotPanel } from '@/components/header/CopilotPanel'
 import { PresetsPanel } from '@/components/header/PresetsPanel'
 import { CustomModulesPanel } from '@/components/header/CustomModulesPanel'
+import { MobileTopBar } from '@/components/mobile/MobileTopBar'
+import { MobileTabBar } from '@/components/mobile/MobileTabBar'
+import { MobileSheet } from '@/components/mobile/MobileSheet'
+import { MobileMoreMenu } from '@/components/mobile/MobileMoreMenu'
 import { ClientOnly } from '@/components/util/ClientOnly'
 import { useConfigurator } from '@/stores/configurator'
 import { useLocale } from '@/stores/locale'
@@ -86,30 +90,40 @@ export default function HomePage() {
       <Scene />
 
       <ClientOnly>
-        <Header />
+        {/* ============ DESKTOP UI (md+) ============ */}
+        <div className="hidden md:block">
+          <Header />
+          <div className="pointer-events-none absolute inset-0 z-10">
+            <div className="pointer-events-auto absolute left-6 top-24 bottom-24 w-72 animate-fade-up">
+              <ModulePanel />
+            </div>
+            <div className="pointer-events-auto absolute right-6 top-24 w-80 space-y-3 max-h-[calc(100vh-10rem)] overflow-y-auto animate-fade-up">
+              <WorldPanel />
+              <LandPanel />
+              <ProPanel />
+              <TemplatesPanel />
+              <CinematicPanel />
+              <CopilotPanel />
+              <PresetsPanel />
+              <CustomModulesPanel />
+              <PricePanel />
+              {selectionId && <SelectionPanel />}
+            </div>
+            <div className="pointer-events-auto absolute bottom-6 left-6 right-[26rem] animate-fade-up">
+              <Timeline />
+            </div>
+            <div className="pointer-events-auto absolute bottom-6 right-6 w-72 animate-fade-up">
+              <KeyboardHelp />
+            </div>
+          </div>
+        </div>
 
-        <div className="pointer-events-none absolute inset-0 z-10">
-          <div className="pointer-events-auto absolute left-6 top-24 bottom-24 w-72 animate-fade-up">
-            <ModulePanel />
-          </div>
-          <div className="pointer-events-auto absolute right-6 top-24 w-80 space-y-3 max-h-[calc(100vh-10rem)] overflow-y-auto animate-fade-up">
-            <WorldPanel />
-            <LandPanel />
-            <ProPanel />
-            <TemplatesPanel />
-            <CinematicPanel />
-            <CopilotPanel />
-            <PresetsPanel />
-            <CustomModulesPanel />
-            <PricePanel />
-            {selectionId && <SelectionPanel />}
-          </div>
-          <div className="pointer-events-auto absolute bottom-6 left-6 right-[26rem] animate-fade-up">
-            <Timeline />
-          </div>
-          <div className="pointer-events-auto absolute bottom-6 right-6 w-72 animate-fade-up">
-            <KeyboardHelp />
-          </div>
+        {/* ============ MOBILE UI (<md) ============ */}
+        <div className="md:hidden">
+          <MobileTopBar />
+          <MobileTabBar />
+          <MobileSheet />
+          <MobileMoreMenu />
         </div>
 
         <CompareView />

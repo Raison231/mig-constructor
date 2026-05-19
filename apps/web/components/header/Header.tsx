@@ -74,10 +74,10 @@ export function Header() {
       const bundle: MigBundle = { scene, landImage, landImageMime, heightmap: l.heightmap ?? undefined }
       const bytes = await encodeMigFile(bundle)
       await saveMigFile(bytes, `mig-scene-${Date.now()}.mig`)
-      flash('\u{1F4BE} \u0421\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u043E')
+      flash('💾 Сохранено')
     } catch (e) {
       console.error('[save .mig]', e)
-      flash('\u041E\u0448\u0438\u0431\u043A\u0430 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u044F')
+      flash('Ошибка сохранения')
     }
   }
 
@@ -93,10 +93,10 @@ export function Header() {
       w.setSite(bundle.scene.world.site as Site)
       w.setCameraMode(bundle.scene.world.cameraMode as CameraMode)
       useLand.getState().hydrateFromBundle(bundle)
-      flash('\u{1F4C2} \u0417\u0430\u0433\u0440\u0443\u0436\u0435\u043D\u043E')
+      flash('📂 Загружено')
     } catch (e) {
       console.error('[load .mig]', e)
-      flash('\u041E\u0448\u0438\u0431\u043A\u0430 \u0437\u0430\u0433\u0440\u0443\u0437\u043A\u0438')
+      flash('Ошибка загрузки')
     }
   }
 
@@ -104,14 +104,14 @@ export function Header() {
     try {
       const scene = useThreeRef.getState().scene
       if (!scene) {
-        flash('\u0421\u0446\u0435\u043D\u0430 \u043D\u0435 \u0433\u043E\u0442\u043E\u0432\u0430')
+        flash('Сцена не готова')
         return
       }
       exportSceneToGlb(scene, `mig-scene-${Date.now()}.glb`)
-      flash('\u{1F4E6} GLB \u044D\u043A\u0441\u043F\u043E\u0440\u0442\u0438\u0440\u043E\u0432\u0430\u043D\u043E')
+      flash('📦 GLB экспортировано')
     } catch (e) {
       console.error('[glb export]', e)
-      flash('\u041E\u0448\u0438\u0431\u043A\u0430 GLB')
+      flash('Ошибка GLB')
     }
   }
 
@@ -125,13 +125,13 @@ export function Header() {
           <span className="font-mono text-[13px] font-semibold tracking-[0.04em] text-ink">MIG.CONSTRUCTOR</span>
           <span className="mt-0.5 text-[10px] tracking-wider text-ink3 uppercase">{t('app.subtitle', locale)}</span>
         </div>
-        <span className="ml-2 rounded-full bg-brand-primary/10 text-brand-primary px-2.5 py-0.5 text-[10px] font-semibold tracking-wide border border-brand-primary/20">AURORA · v0.10</span>
+        <span className="ml-2 rounded-full bg-brand-primary/10 text-brand-primary px-2.5 py-0.5 text-[10px] font-semibold tracking-wide border border-brand-primary/20">AURORA · v0.11</span>
       </div>
 
       <div className="pointer-events-auto flex items-center gap-2">
-        <button onClick={saveMig} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white transition" title="\u0421\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C \u0441\u0446\u0435\u043D\u0443 \u0432 .mig">\u{1F4BE} .mig</button>
-        <button onClick={loadMig} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white transition" title="\u041E\u0442\u043A\u0440\u044B\u0442\u044C .mig">\u{1F4C2} \u041E\u0442\u043A\u0440\u044B\u0442\u044C</button>
-        <button onClick={exportGlb} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white transition" title="\u042D\u043A\u0441\u043F\u043E\u0440\u0442 \u0432 GLB">\u{1F4E6} GLB</button>
+        <button onClick={saveMig} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white transition" title="Сохранить сцену в .mig">💾 .mig</button>
+        <button onClick={loadMig} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white transition" title="Открыть .mig">📂 Открыть</button>
+        <button onClick={exportGlb} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white transition" title="Экспорт в GLB">📦 GLB</button>
         <button onClick={share} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white transition">⤴ {t('header.share', locale)}</button>
         <button onClick={downloadSceneScreenshot} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white transition">⎉ {t('header.screenshot', locale)}</button>
         <button onClick={reset} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-brand-coral hover:bg-brand-coral hover:text-white transition">⟲ {t('header.reset', locale)}</button>
