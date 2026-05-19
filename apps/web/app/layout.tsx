@@ -15,11 +15,16 @@ export const metadata: Metadata = {
 }
 
 // Next 15: themeColor / viewport / colorScheme живут отдельным viewport-экспортом.
+// W15: viewportFit=cover для safe-area (notch / home-indicator), maximumScale=1 чтобы
+// iOS не зумил при фокусе на input в mobile shell.
 export const viewport: Viewport = {
   themeColor: '#F8F9FC',
   colorScheme: 'light',
   width: 'device-width',
   initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

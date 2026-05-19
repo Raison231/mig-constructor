@@ -52,6 +52,8 @@ body {
   background: var(--canvas);
   color: var(--ink);
   min-height: 100vh;
+  /* W15: use 100dvh on mobile to account for dynamic browser chrome (iOS Safari URL bar) */
+  min-height: 100dvh;
   overscroll-behavior: none;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -60,6 +62,8 @@ body {
 body {
   font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
   font-feature-settings: 'cv11', 'ss01', 'ss03';
+  /* W15: prevent the page itself from being draggable by touch; canvas handles its own gestures. */
+  touch-action: pan-y;
 }
 
 /* ===== AURORA MESH BACKGROUND ===== */
@@ -184,4 +188,50 @@ input[type='range'].aurora-range::-moz-range-thumb {
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(-4px); }
+}
+
+/* ============================================================
+   W15 · MOBILE / TOUCH UTILITIES
+   ============================================================ */
+
+/* WebGL canvas owns its own gestures (orbit / pinch / pan); kill default touch behaviors. */
+canvas {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Safe-area helpers for iOS notch / home indicator. */
+.pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.pl-safe { padding-left: env(safe-area-inset-left, 0px); }
+.pr-safe { padding-right: env(safe-area-inset-right, 0px); }
+
+/* Hide scrollbar but keep scroll (useful for horizontal mobile chip rows). */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Disable iOS double-tap zoom on buttons inside the mobile shell. */
+button, [role='button'], [role='menuitem'] {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+@media (max-width: 767px) {
+  /* Slightly stronger glass on mobile for legibility over busy 3D scenes. */
+  .glass {
+    background: rgba(255, 255, 255, 0.78);
+  }
+  /* Tighter scrollbars on mobile. */
+  *::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  /* When the bottom sheet is open the body gets overflow:hidden inline. */
 }
