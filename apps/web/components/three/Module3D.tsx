@@ -8,8 +8,17 @@ import { moduleComponents } from './modules/registry'
 import { moduleDims } from './modules/shared/dimensions'
 import { ConnectorIndicators } from './modules/shared/ConnectorIndicators'
 import { SelectionRing } from './SelectionRing'
+import { isCustomModuleId } from '@/lib/customGlbImport'
+import { CustomGlbModule } from './CustomGlbModule'
 
 export function Module3D({ instance }: { instance: ModuleInstance }) {
+  if (isCustomModuleId(instance.moduleId)) {
+    return <CustomGlbModule instance={instance} />
+  }
+  return <StandardModule3D instance={instance} />
+}
+
+function StandardModule3D({ instance }: { instance: ModuleInstance }) {
   const def = useMemo(() => modules.find((m) => m.id === instance.moduleId), [instance.moduleId])
   const selectionId = useConfigurator((s) => s.selectionId)
   const select = useConfigurator((s) => s.select)
