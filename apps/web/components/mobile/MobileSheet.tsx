@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import type { CSSProperties } from 'react'
 import { useMobileUi, type MobileTab } from '@/stores/mobileUi'
 import { useConfigurator } from '@/stores/configurator'
 import { ModulePanel } from '@/components/configurator/ModulePanel'
@@ -14,6 +15,11 @@ import { LandPanel } from '@/components/header/LandPanel'
 import { CopilotPanel } from '@/components/header/CopilotPanel'
 import { PresetsPanel } from '@/components/header/PresetsPanel'
 import { CustomModulesPanel } from '@/components/header/CustomModulesPanel'
+
+const SHEET_STYLE: CSSProperties = {
+  top: 'calc(4rem + env(safe-area-inset-top, 0px))',
+  bottom: 'calc(4.5rem + env(safe-area-inset-bottom, 0px))',
+}
 
 const TAB_TITLES: Record<MobileTab, string> = {
   build: '🧩 Сборка',
@@ -53,10 +59,7 @@ export function MobileSheet() {
       />
       <section
         className="md:hidden fixed left-0 right-0 z-30 pointer-events-auto glass-strong rounded-t-3xl border-t border-hairline shadow-2xl animate-fade-up flex flex-col"
-        style=
-          bottom: 'calc(4.25rem + env(safe-area-inset-bottom, 0px))',
-          top: 'calc(4.5rem + env(safe-area-inset-top, 0px))',
-        
+        style={SHEET_STYLE}
         role="dialog"
         aria-modal="true"
         aria-label={TAB_TITLES[activeTab]}

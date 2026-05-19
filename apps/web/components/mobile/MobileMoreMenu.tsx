@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import type { CSSProperties } from 'react'
 import { useMobileUi } from '@/stores/mobileUi'
 import { useConfigurator } from '@/stores/configurator'
 import { useWorld, type Weather, type Site, type CameraMode } from '@/stores/world'
@@ -21,6 +22,14 @@ import {
 } from '@/lib/migFile'
 import { exportSceneToGlb } from '@/lib/glbExport'
 
+const MENU_STYLE: CSSProperties = {
+  top: 'calc(4rem + env(safe-area-inset-top, 0px))',
+}
+
+const TOAST_STYLE: CSSProperties = {
+  top: 'calc(5.25rem + env(safe-area-inset-top, 0px))',
+}
+
 const LOCALES: Locale[] = ['ru', 'en', 'ka']
 const LOCALE_LABELS: Record<Locale, string> = { ru: 'RU', en: 'EN', ka: 'KA' }
 
@@ -38,7 +47,7 @@ export function MobileMoreMenu() {
   const reset = useConfigurator((s) => s.reset)
   const [toast, setToast] = useState<string | null>(null)
 
-  function flash(msg: string, ms = 1600) {
+  function flash(msg: string, ms = 1800) {
     setToast(msg)
     setTimeout(() => setToast(null), ms)
   }
@@ -138,7 +147,7 @@ export function MobileMoreMenu() {
       />
       <div
         className="absolute right-3 w-72 max-w-[calc(100vw-1.5rem)] glass-strong rounded-3xl p-3 animate-fade-up shadow-2xl"
-        style= top: 'calc(4.5rem + env(safe-area-inset-top, 0px))' 
+        style={MENU_STYLE}
         role="menu"
       >
         <div className="flex items-center justify-between px-1.5 pb-2">
@@ -155,55 +164,12 @@ export function MobileMoreMenu() {
           </button>
         </div>
         <div className="space-y-1">
-          <MenuItem
-            emoji="💾"
-            label="Сохранить .mig"
-            onClick={() => {
-              saveMig()
-              setOpen(false)
-            }}
-          />
-          <MenuItem
-            emoji="📂"
-            label="Открыть .mig"
-            onClick={() => {
-              loadMig()
-              setOpen(false)
-            }}
-          />
-          <MenuItem
-            emoji="📦"
-            label="Экспорт GLB"
-            onClick={() => {
-              exportGlb()
-              setOpen(false)
-            }}
-          />
-          <MenuItem
-            emoji="⤴"
-            label={t('header.share', locale)}
-            onClick={() => {
-              share()
-              setOpen(false)
-            }}
-          />
-          <MenuItem
-            emoji="⎉"
-            label={t('header.screenshot', locale)}
-            onClick={() => {
-              downloadSceneScreenshot()
-              setOpen(false)
-            }}
-          />
-          <MenuItem
-            emoji="⟲"
-            label={t('header.reset', locale)}
-            danger
-            onClick={() => {
-              reset()
-              setOpen(false)
-            }}
-          />
+          <MenuItem emoji="💾" label="Сохранить .mig" onClick={() => { saveMig(); setOpen(false) }} />
+          <MenuItem emoji="📂" label="Открыть .mig" onClick={() => { loadMig(); setOpen(false) }} />
+          <MenuItem emoji="📦" label="Экспорт GLB" onClick={() => { exportGlb(); setOpen(false) }} />
+          <MenuItem emoji="⤴" label={t('header.share', locale)} onClick={() => { share(); setOpen(false) }} />
+          <MenuItem emoji="⎉" label={t('header.screenshot', locale)} onClick={() => { downloadSceneScreenshot(); setOpen(false) }} />
+          <MenuItem emoji="⟲" label={t('header.reset', locale)} danger onClick={() => { reset(); setOpen(false) }} />
         </div>
         <div className="mt-3 pt-3 border-t border-hairline">
           <div className="text-[9px] uppercase tracking-[0.18em] text-ink3 px-1.5 mb-1.5">
@@ -230,8 +196,9 @@ export function MobileMoreMenu() {
         </div>
       </div>
       {toast && (
-        <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 animate-fade-up rounded-full bg-brand-primary px-4 py-1.5 text-[11px] font-bold text-white shadow-aurora-primary"
-          style= top: 'calc(5rem + env(safe-area-inset-top, 0px))' 
+        <div
+          className="pointer-events-none absolute left-1/2 -translate-x-1/2 animate-fade-up rounded-full bg-brand-primary px-4 py-1.5 text-[11px] font-bold text-white shadow-aurora-primary"
+          style={TOAST_STYLE}
         >
           {toast}
         </div>

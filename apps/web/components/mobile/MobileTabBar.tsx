@@ -1,6 +1,11 @@
 'use client'
 
+import type { CSSProperties } from 'react'
 import { useMobileUi, type MobileTab } from '@/stores/mobileUi'
+
+const TABBAR_STYLE: CSSProperties = {
+  paddingBottom: 'calc(0.375rem + env(safe-area-inset-bottom, 0px))',
+}
 
 const TABS: Array<{ id: MobileTab; emoji: string; label: string }> = [
   { id: 'build', emoji: '🧩', label: 'Сборка' },
@@ -21,7 +26,8 @@ export function MobileTabBar() {
   return (
     <nav
       className="md:hidden pointer-events-auto fixed left-0 right-0 bottom-0 z-30 glass-strong border-t border-hairline px-1.5 pt-1.5"
-      style= paddingBottom: 'calc(0.375rem + env(safe-area-inset-bottom, 0px))' 
+      style={TABBAR_STYLE}
+      aria-label="Разделы"
     >
       <div className="flex items-stretch justify-between gap-1">
         {TABS.map((tab) => {

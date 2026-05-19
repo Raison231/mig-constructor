@@ -1,7 +1,13 @@
 'use client'
 
+import type { CSSProperties } from 'react'
 import { useMobileUi } from '@/stores/mobileUi'
 import { useConfigurator } from '@/stores/configurator'
+
+const TOPBAR_STYLE: CSSProperties = {
+  paddingTop: 'calc(0.5rem + env(safe-area-inset-top, 0px))',
+  paddingBottom: '0.5rem',
+}
 
 /**
  * Compact top bar shown only on mobile (<768px).
@@ -14,10 +20,7 @@ export function MobileTopBar() {
   return (
     <header
       className="md:hidden pointer-events-auto fixed left-0 right-0 top-0 z-30 glass-strong border-b border-hairline px-3 flex items-center justify-between"
-      style=
-        paddingTop: 'calc(0.5rem + env(safe-area-inset-top, 0px))',
-        paddingBottom: '0.5rem',
-      
+      style={TOPBAR_STYLE}
     >
       <div className="flex items-center gap-2 min-w-0">
         <div className="aurora-glow relative h-9 w-9 rounded-2xl bg-gradient-to-br from-brand-primary via-brand-secondary to-brand-field shadow-aurora-primary flex items-center justify-center flex-shrink-0">
