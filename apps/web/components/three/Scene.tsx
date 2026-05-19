@@ -25,6 +25,7 @@ import { ARScene } from './ARScene'
 import { RealtimeCursors } from './RealtimeCursors'
 import { WalkthroughCamera } from './WalkthroughCamera'
 import { DroneCamera } from './DroneCamera'
+import { HealthMonitor } from './HealthMonitor'
 
 function SceneCapture() {
   const scene = useThree((s) => s.scene)
@@ -67,6 +68,7 @@ export function Scene() {
       onPointerMissed={() => deselect()}
     >
       <SceneCapture />
+      <HealthMonitor />
       <color attach="background" args={BG_ARGS} />
 
       <ambientLight intensity={0.45} />

@@ -23,6 +23,7 @@ import {
 } from '@/lib/migFile'
 import { exportSceneToGlb } from '@/lib/glbExport'
 import { xrStore } from '@/components/three/ARScene'
+import { HealthBadge } from './HealthBadge'
 
 const LOCALES: Locale[] = ['ru', 'en', 'ka']
 const LOCALE_LABELS: Record<Locale, string> = { ru: 'RU', en: 'EN', ka: 'KA' }
@@ -224,6 +225,7 @@ export function Header() {
         >
           🥽 {arActive ? 'AR ✖' : 'AR'}
         </button>
+        <HealthBadge />
         <span className="w-px h-5 bg-hairline mx-0.5" aria-hidden />
         <button onClick={saveMig} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white transition" title="Сохранить сцену в .mig (v2)">💾 .mig</button>
         <button onClick={loadMig} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white transition" title="Открыть .mig (v1/v2)">📂 Открыть</button>
