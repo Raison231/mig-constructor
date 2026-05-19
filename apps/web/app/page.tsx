@@ -13,6 +13,7 @@ import { TemplatesPanel } from '@/components/controls/TemplatesPanel'
 import { CinematicPanel } from '@/components/controls/CinematicPanel'
 import { CompareView } from '@/components/ui/CompareView'
 import { Header } from '@/components/header/Header'
+import { LandPanel } from '@/components/header/LandPanel'
 import { ClientOnly } from '@/components/util/ClientOnly'
 import { useConfigurator } from '@/stores/configurator'
 import { useLocale } from '@/stores/locale'
@@ -47,7 +48,6 @@ export default function HomePage() {
     }
   }, [setLayout])
 
-  // url-state sync с дебаунсом — фикс "Throttling navigation"
   useEffect(() => {
     if (typeof window === 'undefined') return
     const id = window.setTimeout(() => {
@@ -82,8 +82,6 @@ export default function HomePage() {
     <main className="relative h-screen w-screen overflow-hidden bg-canvas aurora-mesh">
       <Scene />
 
-      {/* Весь интерактивный overlay живёт ТОЛЬКО на клиенте — это закрывает класс
-          hydration mismatch'ей от persisted Zustand-сторов (modules, locale, world, etc.) */}
       <ClientOnly>
         <Header />
 
@@ -93,6 +91,7 @@ export default function HomePage() {
           </div>
           <div className="pointer-events-auto absolute right-6 top-24 w-80 space-y-3 max-h-[calc(100vh-10rem)] overflow-y-auto animate-fade-up">
             <WorldPanel />
+            <LandPanel />
             <ProPanel />
             <TemplatesPanel />
             <CinematicPanel />
