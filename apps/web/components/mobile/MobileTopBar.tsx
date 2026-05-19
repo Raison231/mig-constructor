@@ -31,7 +31,7 @@ export function MobileTopBar() {
             MIG.CONSTRUCTOR
           </span>
           <span className="text-[8px] tracking-[0.18em] text-ink3 uppercase truncate">
-            AURORA · v0.11
+            AURORA · v0.12
           </span>
         </div>
       </div>
