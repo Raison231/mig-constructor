@@ -1,13 +1,17 @@
 'use client'
 
-import { Suspense } from 'react'
-import { Canvas } from '@react-three/fiber'
+import { Suspense, useEffect } from 'react'
+import { Canvas, useThree } from '@react-three/fiber'
 import { Grid, Environment, ContactShadows } from '@react-three/drei'
 import { useConfigurator } from '@/stores/configurator'
 import { usePhysics } from '@/stores/physics'
 import { useCinematic } from '@/stores/cinematic'
+import { useLand } from '@/stores/land'
+import { useThreeRef } from '@/stores/threeRef'
 import { Module3D } from './Module3D'
 import { Ground } from './Ground'
+import { Land } from './Land'
+import { Terrain } from './Terrain'
 import { DragControls } from './DragControls'
 import { SnapPreview } from './SnapPreview'
 import { SunSky } from './SunSky'
@@ -21,6 +25,16 @@ import { ARScene } from './ARScene'
 import { RealtimeCursors } from './RealtimeCursors'
 import { WalkthroughCamera } from './WalkthroughCamera'
 import { DroneCamera } from './DroneCamera'
+
+function SceneCapture() {
+  const scene = useThree((s) => s.scene)
+  const setScene = useThreeRef((s) => s.setScene)
+  useEffect(() => {
+    setScene(scene)
+    return () => setScene(null)
+  }, [scene, setScene])
+  return null
+}
 
 const CAMERA_OPTS = { fov: 45, position: [12, 10, 14] as [number, number, number], near: 0.1, far: 200 }
 const GL_OPTS = { antialias: true, alpha: false, powerPreference: 'high-performance' as const, preserveDrawingBuffer: true }
@@ -39,6 +53,11 @@ export function Scene() {
   const cinematicActive = cinematicMode !== 'off'
   const showContactShadows = !physicsActive && !cinematicActive
 
+  const landEnabled = useLand((s) => s.enabled)
+  const hasHeightmap = useLand((s) => !!s.heightmap)
+  const hasLandImage = useLand((s) => !!s.imageDataUrl)
+  const useCustomLand = landEnabled && (hasHeightmap || hasLandImage)
+
   return (
     <Canvas
       shadows
@@ -47,10 +66,9 @@ export function Scene() {
       gl={GL_OPTS}
       onPointerMissed={() => deselect()}
     >
-      {/* AURORA canvas background — соответствует --canvas из globals.css */}
+      <SceneCapture />
       <color attach="background" args={BG_ARGS} />
 
-      {/* Primary lights — работают независимо от IBL */}
       <ambientLight intensity={0.45} />
       <hemisphereLight args={HEMI_ARGS} />
       <directionalLight
@@ -69,18 +87,20 @@ export function Scene() {
         shadow-bias={-0.0001}
       />
 
-      {/* IBL — опционально, в Suspense чтобы провал HDR-загрузки не убил Canvas */}
       <Suspense fallback={null}>
         <Environment preset="city" background={false} />
       </Suspense>
 
-      {/* Основная сцена — тоже под Suspense на случай асинхронных лоадеров */}
       <Suspense fallback={null}>
         <ARScene>
           <SiteEnvironment />
           <SunSky />
           <Weather />
-          <Ground />
+          {useCustomLand ? (
+            hasHeightmap ? <Terrain /> : <Land />
+          ) : (
+            <Ground />
+          )}
           <Grid
             args={GRID_ARGS}
             cellSize={1}
