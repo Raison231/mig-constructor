@@ -12,6 +12,7 @@ import { ProPanel } from '@/components/controls/ProPanel'
 import { TemplatesPanel } from '@/components/controls/TemplatesPanel'
 import { CinematicPanel } from '@/components/controls/CinematicPanel'
 import { WalkPanel } from '@/components/controls/WalkPanel'
+import { FloraPanel } from '@/components/controls/FloraPanel'
 import { CompareView } from '@/components/ui/CompareView'
 import { Header } from '@/components/header/Header'
 import { LandPanel } from '@/components/header/LandPanel'
@@ -102,6 +103,7 @@ export default function HomePage() {
               <WorldPanel />
               <LandPanel />
               <WalkPanel />
+              <FloraPanel />
               <ProPanel />
               <TemplatesPanel />
               <CinematicPanel />

@@ -26,6 +26,7 @@ import { RealtimeCursors } from './RealtimeCursors'
 import { WalkthroughCamera } from './WalkthroughCamera'
 import { DroneCamera } from './DroneCamera'
 import { HealthMonitor } from './HealthMonitor'
+import { InstancedForest } from './InstancedForest'
 
 function SceneCapture() {
   const scene = useThree((s) => s.scene)
@@ -97,6 +98,7 @@ export function Scene() {
         <ARScene>
           <SiteEnvironment />
           <SunSky />
+          <InstancedForest />
           <Weather />
           {useCustomLand ? (
             hasHeightmap ? <Terrain /> : <Land />
