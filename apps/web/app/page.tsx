@@ -14,6 +14,9 @@ import { CinematicPanel } from '@/components/controls/CinematicPanel'
 import { CompareView } from '@/components/ui/CompareView'
 import { Header } from '@/components/header/Header'
 import { LandPanel } from '@/components/header/LandPanel'
+import { CopilotPanel } from '@/components/header/CopilotPanel'
+import { PresetsPanel } from '@/components/header/PresetsPanel'
+import { CustomModulesPanel } from '@/components/header/CustomModulesPanel'
 import { ClientOnly } from '@/components/util/ClientOnly'
 import { useConfigurator } from '@/stores/configurator'
 import { useLocale } from '@/stores/locale'
@@ -95,6 +98,9 @@ export default function HomePage() {
             <ProPanel />
             <TemplatesPanel />
             <CinematicPanel />
+            <CopilotPanel />
+            <PresetsPanel />
+            <CustomModulesPanel />
             <PricePanel />
             {selectionId && <SelectionPanel />}
           </div>

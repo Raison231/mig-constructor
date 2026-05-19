@@ -125,7 +125,7 @@ export function Header() {
           <span className="font-mono text-[13px] font-semibold tracking-[0.04em] text-ink">MIG.CONSTRUCTOR</span>
           <span className="mt-0.5 text-[10px] tracking-wider text-ink3 uppercase">{t('app.subtitle', locale)}</span>
         </div>
-        <span className="ml-2 rounded-full bg-brand-primary/10 text-brand-primary px-2.5 py-0.5 text-[10px] font-semibold tracking-wide border border-brand-primary/20">AURORA · v0.9</span>
+        <span className="ml-2 rounded-full bg-brand-primary/10 text-brand-primary px-2.5 py-0.5 text-[10px] font-semibold tracking-wide border border-brand-primary/20">AURORA · v0.10</span>
       </div>
 
       <div className="pointer-events-auto flex items-center gap-2">
@@ -133,7 +133,7 @@ export function Header() {
         <button onClick={loadMig} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white transition" title="\u041E\u0442\u043A\u0440\u044B\u0442\u044C .mig">\u{1F4C2} \u041E\u0442\u043A\u0440\u044B\u0442\u044C</button>
         <button onClick={exportGlb} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white transition" title="\u042D\u043A\u0441\u043F\u043E\u0440\u0442 \u0432 GLB">\u{1F4E6} GLB</button>
         <button onClick={share} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white transition">⤴ {t('header.share', locale)}</button>
-        <button onClick={downloadSceneScreenshot} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white transition">⎙ {t('header.screenshot', locale)}</button>
+        <button onClick={downloadSceneScreenshot} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white transition">⎉ {t('header.screenshot', locale)}</button>
         <button onClick={reset} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-brand-coral hover:bg-brand-coral hover:text-white transition">⟲ {t('header.reset', locale)}</button>
 
         <div className="ml-2 flex gap-0.5 rounded-full glass p-1">
