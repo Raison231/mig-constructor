@@ -2,8 +2,17 @@
 
 import { zip, unzip, strToU8, strFromU8 } from 'fflate'
 import type { ModuleInstance } from '@/stores/configurator'
+import type { CustomGlbInfo } from './customGlbImport'
+import { bytesToBase64, base64ToBytes } from './customGlbImport'
 
-export const MIG_FILE_VERSION = 1
+/**
+ * MIG file format
+ *  v1 (legacy): zip with scene.json + meta.json + optional land.png/jpg + heightmap.bin
+ *  v2:         v1 + optional custom-modules/<id>.glb entries + scene.customModules[] manifest
+ *
+ * encodeMigFile() always writes v2. decodeMigFile() reads both v1 and v2.
+ */
+export const MIG_FILE_VERSION = 2
 export const MIG_FILE_EXT = '.mig'
 
 export type MigWorldSnapshot = {
@@ -11,6 +20,9 @@ export type MigWorldSnapshot = {
   weather: string
   site: string
   cameraMode: string
+  /** v2+ — auto day/night cycle state (optional for back-compat) */
+  dayNightAuto?: boolean
+  dayNightSpeed?: number
 }
 
 export type MigLandSnapshot = {
@@ -26,6 +38,19 @@ export type MigLandSnapshot = {
   heightmapScale: number
 }
 
+/** Inline manifest for a single custom GLB module packed in the zip. */
+export type MigCustomModuleManifest = {
+  id: string
+  name: string
+  width: number
+  height: number
+  depth: number
+  sizeBytes: number
+  addedAt: string
+  /** Relative path inside the zip where the .glb bytes live. */
+  glbPath: string
+}
+
 export type MigFile = {
   version: number
   createdAt: string
@@ -33,6 +58,8 @@ export type MigFile = {
   modules: ModuleInstance[]
   world: MigWorldSnapshot
   land: MigLandSnapshot
+  /** v2+ — list of custom GLB modules embedded in this bundle. */
+  customModules?: MigCustomModuleManifest[]
 }
 
 export type MigBundle = {
@@ -40,6 +67,8 @@ export type MigBundle = {
   landImage?: Uint8Array
   landImageMime?: string
   heightmap?: Float32Array
+  /** v2+ — full custom-module records (the inflated/inflatable inverse of MigCustomModuleManifest). */
+  customModules?: CustomGlbInfo[]
 }
 
 function zipAsync(files: Record<string, Uint8Array>): Promise<Uint8Array> {
@@ -91,14 +120,50 @@ function bytesToF32(bytes: Uint8Array): Float32Array {
   return new Float32Array(buf)
 }
 
+function sanitizeId(id: string): string {
+  // turn anything illegal-on-fs into '_' — zip entries must avoid '/' '..' etc.
+  return id.replace(/[^a-zA-Z0-9_.-]/g, '_')
+}
+
 export async function encodeMigFile(bundle: MigBundle): Promise<Uint8Array> {
+  // Build the custom-module manifest + collect glb byte blobs for the zip.
+  const customManifest: MigCustomModuleManifest[] = []
+  const customGlbFiles: Record<string, Uint8Array> = {}
+  if (bundle.customModules && bundle.customModules.length > 0) {
+    for (const c of bundle.customModules) {
+      const safe = sanitizeId(c.id)
+      const glbPath = `custom-modules/${safe}.glb`
+      const glbBytes = base64ToBytes(c.arrayBufferBase64)
+      customGlbFiles[glbPath] = glbBytes
+      customManifest.push({
+        id: c.id,
+        name: c.name,
+        width: c.width,
+        height: c.height,
+        depth: c.depth,
+        sizeBytes: c.sizeBytes,
+        addedAt: c.addedAt,
+        glbPath,
+      })
+    }
+  }
+
+  // Always write v2 with `customModules` slot (may be []).
+  const sceneOut: MigFile = {
+    ...bundle.scene,
+    version: MIG_FILE_VERSION,
+    customModules: customManifest,
+  }
+
   const files: Record<string, Uint8Array> = {
-    'scene.json': strToU8(JSON.stringify(bundle.scene, null, 2)),
+    'scene.json': strToU8(JSON.stringify(sceneOut, null, 2)),
     'meta.json': strToU8(JSON.stringify({
       version: MIG_FILE_VERSION,
       createdAt: bundle.scene.createdAt,
       app: 'mig-constructor',
+      customModuleCount: customManifest.length,
     }, null, 2)),
+    ...customGlbFiles,
   }
   if (bundle.landImage && bundle.landImage.length > 0) {
     const ext = bundle.landImageMime === 'image/jpeg' ? 'jpg' : 'png'
@@ -125,7 +190,31 @@ export async function decodeMigFile(data: Uint8Array): Promise<MigBundle> {
   let heightmap: Float32Array | undefined
   if (files['heightmap.bin']) heightmap = bytesToF32(files['heightmap.bin'])
 
-  return { scene, landImage, landImageMime, heightmap }
+  // v2 custom modules — inflate manifest entries back into CustomGlbInfo records.
+  // For v1 files, scene.customModules is undefined → we just leave bundle.customModules empty.
+  let customModules: CustomGlbInfo[] | undefined
+  if (scene.customModules && scene.customModules.length > 0) {
+    customModules = []
+    for (const m of scene.customModules) {
+      const glbBytes = files[m.glbPath]
+      if (!glbBytes) {
+        console.warn('[migFile] custom module file missing in zip:', m.glbPath)
+        continue
+      }
+      customModules.push({
+        id: m.id,
+        name: m.name,
+        arrayBufferBase64: bytesToBase64(glbBytes),
+        width: m.width,
+        height: m.height,
+        depth: m.depth,
+        sizeBytes: m.sizeBytes,
+        addedAt: m.addedAt,
+      })
+    }
+  }
+
+  return { scene, landImage, landImageMime, heightmap, customModules }
 }
 
 export function downloadBytes(bytes: Uint8Array, filename: string, mime = 'application/zip') {
