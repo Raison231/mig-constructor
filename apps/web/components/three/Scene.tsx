@@ -27,6 +27,7 @@ import { WalkthroughCamera } from './WalkthroughCamera'
 import { DroneCamera } from './DroneCamera'
 import { HealthMonitor } from './HealthMonitor'
 import { InstancedForest } from './InstancedForest'
+import { AmbientHook } from './AmbientHook'
 
 function SceneCapture() {
   const scene = useThree((s) => s.scene)
@@ -70,6 +71,7 @@ export function Scene() {
     >
       <SceneCapture />
       <HealthMonitor />
+      <AmbientHook />
       <color attach="background" args={BG_ARGS} />
 
       <ambientLight intensity={0.45} />
