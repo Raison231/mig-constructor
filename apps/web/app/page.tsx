@@ -15,6 +15,7 @@ import { WalkPanel } from '@/components/controls/WalkPanel'
 import { FloraPanel } from '@/components/controls/FloraPanel'
 import { AudioPanel } from '@/components/controls/AudioPanel'
 import { TerrainPanel } from '@/components/controls/TerrainPanel'
+import { OsmPanel } from '@/components/controls/OsmPanel'
 import { CompareView } from '@/components/ui/CompareView'
 import { Header } from '@/components/header/Header'
 import { LandPanel } from '@/components/header/LandPanel'
@@ -107,6 +108,7 @@ export default function HomePage() {
               <FloraPanel />
               <AudioPanel />
               <TerrainPanel />
+              <OsmPanel />
               <ProPanel />
               <TemplatesPanel />
               <CinematicPanel />
