@@ -12,6 +12,10 @@ import { ProPanel } from '@/components/controls/ProPanel'
 import { TemplatesPanel } from '@/components/controls/TemplatesPanel'
 import { CinematicPanel } from '@/components/controls/CinematicPanel'
 import { WalkPanel } from '@/components/controls/WalkPanel'
+import { FloraPanel } from '@/components/controls/FloraPanel'
+import { AudioPanel } from '@/components/controls/AudioPanel'
+import { TerrainPanel } from '@/components/controls/TerrainPanel'
+import { OsmPanel } from '@/components/controls/OsmPanel'
 import { CompareView } from '@/components/ui/CompareView'
 import { Header } from '@/components/header/Header'
 import { LandPanel } from '@/components/header/LandPanel'
@@ -91,7 +95,6 @@ export default function HomePage() {
       <Scene />
 
       <ClientOnly>
-        {/* ============ DESKTOP UI (md+) ============ */}
         <div className="hidden md:block">
           <Header />
           <div className="pointer-events-none absolute inset-0 z-10">
@@ -102,6 +105,10 @@ export default function HomePage() {
               <WorldPanel />
               <LandPanel />
               <WalkPanel />
+              <FloraPanel />
+              <AudioPanel />
+              <TerrainPanel />
+              <OsmPanel />
               <ProPanel />
               <TemplatesPanel />
               <CinematicPanel />
@@ -120,7 +127,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* ============ MOBILE UI (<md) ============ */}
         <div className="md:hidden">
           <MobileTopBar />
           <MobileTabBar />

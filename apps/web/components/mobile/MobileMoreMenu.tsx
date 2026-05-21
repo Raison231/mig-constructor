@@ -11,6 +11,7 @@ import { useLocale, type Locale } from '@/stores/locale'
 import { useCinematic } from '@/stores/cinematic'
 import { useCustomModules } from '@/stores/customModules'
 import { useAR } from '@/stores/ar'
+import { useAudio } from '@/stores/audio'
 import { t } from '@mig/i18n'
 import { copyShareLink } from '@/lib/url-state'
 import { downloadSceneScreenshot } from '@/lib/screenshot'
@@ -26,22 +27,12 @@ import {
 import { exportSceneToGlb } from '@/lib/glbExport'
 import { xrStore } from '@/components/three/ARScene'
 
-const MENU_STYLE: CSSProperties = {
-  top: 'calc(4rem + env(safe-area-inset-top, 0px))',
-}
-
-const TOAST_STYLE: CSSProperties = {
-  top: 'calc(5.25rem + env(safe-area-inset-top, 0px))',
-}
+const MENU_STYLE: CSSProperties = { top: 'calc(4rem + env(safe-area-inset-top, 0px))' }
+const TOAST_STYLE: CSSProperties = { top: 'calc(5.25rem + env(safe-area-inset-top, 0px))' }
 
 const LOCALES: Locale[] = ['ru', 'en', 'ka']
 const LOCALE_LABELS: Record<Locale, string> = { ru: 'RU', en: 'EN', ka: 'KA' }
 
-/**
- * Mobile-only overflow menu (triggered by hamburger in MobileTopBar).
- * Contains all Header actions: Walk Mode, AR, save/load .mig v2, GLB export,
- * share, screenshot, reset, locale switcher.
- */
 export function MobileMoreMenu() {
   const open = useMobileUi((s) => s.moreMenuOpen)
   const setOpen = useMobileUi((s) => s.setMoreMenuOpen)
@@ -56,6 +47,9 @@ export function MobileMoreMenu() {
   const arSupported = useAR((s) => s.supported)
   const setArSupported = useAR((s) => s.setSupported)
   const setArStatus = useAR((s) => s.setStatus)
+  const audioEnabled = useAudio((s) => s.enabled)
+  const setAudioEnabled = useAudio((s) => s.setEnabled)
+  const markAudioUnlocked = useAudio((s) => s.markUnlocked)
   const [toast, setToast] = useState<string | null>(null)
 
   const walkActive = cinematicMode === 'walkthrough'
@@ -92,39 +86,25 @@ export function MobileMoreMenu() {
         app: 'mig-constructor',
         modules,
         world: {
-          hour: w.hour,
-          weather: w.weather,
-          site: w.site,
-          cameraMode: w.cameraMode,
-          dayNightAuto: w.dayNightAuto,
-          dayNightSpeed: w.dayNightSpeed,
+          hour: w.hour, weather: w.weather, site: w.site,
+          cameraMode: w.cameraMode, dayNightAuto: w.dayNightAuto, dayNightSpeed: w.dayNightSpeed,
         },
         land: {
-          widthMeters: l.widthMeters,
-          rotationDeg: l.rotationDeg,
-          offsetX: l.offsetX,
-          offsetZ: l.offsetZ,
-          lat: l.lat,
-          lon: l.lon,
-          hasImage: !!l.imageDataUrl,
-          hasHeightmap: !!l.heightmap,
-          heightmapSize: l.heightmapSize,
-          heightmapScale: l.heightmapScale,
+          widthMeters: l.widthMeters, rotationDeg: l.rotationDeg,
+          offsetX: l.offsetX, offsetZ: l.offsetZ, lat: l.lat, lon: l.lon,
+          hasImage: !!l.imageDataUrl, hasHeightmap: !!l.heightmap,
+          heightmapSize: l.heightmapSize, heightmapScale: l.heightmapScale,
         },
       }
       let landImage: Uint8Array | undefined
       let landImageMime: string | undefined
       if (l.imageDataUrl) {
         const { bytes, mime } = imageDataUrlToBytes(l.imageDataUrl)
-        landImage = bytes
-        landImageMime = mime
+        landImage = bytes; landImageMime = mime
       }
       const bundle: MigBundle = {
-        scene,
-        landImage,
-        landImageMime,
-        heightmap: l.heightmap ?? undefined,
-        customModules: customList,
+        scene, landImage, landImageMime,
+        heightmap: l.heightmap ?? undefined, customModules: customList,
       }
       const bytes = await encodeMigFile(bundle)
       await saveMigFile(bytes, `mig-scene-${Date.now()}.mig`)
@@ -150,12 +130,8 @@ export function MobileMoreMenu() {
       w.setWeather(bundle.scene.world.weather as Weather)
       w.setSite(bundle.scene.world.site as Site)
       w.setCameraMode(bundle.scene.world.cameraMode as CameraMode)
-      if (typeof bundle.scene.world.dayNightAuto === 'boolean') {
-        w.setDayNightAuto(bundle.scene.world.dayNightAuto)
-      }
-      if (typeof bundle.scene.world.dayNightSpeed === 'number') {
-        w.setDayNightSpeed(bundle.scene.world.dayNightSpeed)
-      }
+      if (typeof bundle.scene.world.dayNightAuto === 'boolean') w.setDayNightAuto(bundle.scene.world.dayNightAuto)
+      if (typeof bundle.scene.world.dayNightSpeed === 'number') w.setDayNightSpeed(bundle.scene.world.dayNightSpeed)
       useLand.getState().hydrateFromBundle(bundle)
       const cc = bundle.customModules?.length ?? 0
       flash(cc > 0 ? `📂 + ${cc} GLB` : '📂 Загружено')
@@ -180,6 +156,12 @@ export function MobileMoreMenu() {
   function toggleWalk() {
     setCinematicMode(walkActive ? 'off' : 'walkthrough')
     flash(walkActive ? '🚶 Walk ✖' : '🚶 Walk Mode — тап по сцене')
+  }
+
+  function toggleAudio() {
+    markAudioUnlocked()
+    setAudioEnabled(!audioEnabled)
+    flash(audioEnabled ? '🔇 Амбиент выкл' : '🔊 Амбиент вкл')
   }
 
   async function enterAR() {
@@ -214,17 +196,13 @@ export function MobileMoreMenu() {
         role="menu"
       >
         <div className="flex items-center justify-between px-1.5 pb-2">
-          <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-ink3">
-            Меню
-          </div>
+          <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-ink3">Меню</div>
           <button
             type="button"
             onClick={() => setOpen(false)}
             className="rounded-xl border border-hairline bg-white/60 px-2 py-0.5 text-[10px] font-bold text-ink2 hover:bg-white transition active:scale-95"
             aria-label="Закрыть"
-          >
-            ✕
-          </button>
+          >✕</button>
         </div>
         <div className="space-y-1">
           <MenuItem
@@ -240,18 +218,22 @@ export function MobileMoreMenu() {
             disabled={!arSupported && !arActive}
             onClick={() => { (arActive ? exitAR() : enterAR()); setOpen(false) }}
           />
+          <MenuItem
+            emoji={audioEnabled ? '🔊' : '🔇'}
+            label={audioEnabled ? 'Амбиент ✖' : 'Амбиент'}
+            active={audioEnabled}
+            onClick={() => { toggleAudio(); setOpen(false) }}
+          />
           <div className="my-1 h-px bg-hairline" />
           <MenuItem emoji="💾" label="Сохранить .mig" onClick={() => { saveMig(); setOpen(false) }} />
           <MenuItem emoji="📂" label="Открыть .mig" onClick={() => { loadMig(); setOpen(false) }} />
           <MenuItem emoji="📦" label="Экспорт GLB" onClick={() => { exportGlb(); setOpen(false) }} />
           <MenuItem emoji="⤴" label={t('header.share', locale)} onClick={() => { share(); setOpen(false) }} />
-          <MenuItem emoji="⎉" label={t('header.screenshot', locale)} onClick={() => { downloadSceneScreenshot(); setOpen(false) }} />
+          <MenuItem emoji="⏉" label={t('header.screenshot', locale)} onClick={() => { downloadSceneScreenshot(); setOpen(false) }} />
           <MenuItem emoji="⟲" label={t('header.reset', locale)} danger onClick={() => { reset(); setOpen(false) }} />
         </div>
         <div className="mt-3 pt-3 border-t border-hairline">
-          <div className="text-[9px] uppercase tracking-[0.18em] text-ink3 px-1.5 mb-1.5">
-            Язык
-          </div>
+          <div className="text-[9px] uppercase tracking-[0.18em] text-ink3 px-1.5 mb-1.5">Язык</div>
           <div className="flex gap-1">
             {LOCALES.map((l) => (
               <button
@@ -285,19 +267,11 @@ export function MobileMoreMenu() {
 }
 
 function MenuItem({
-  emoji,
-  label,
-  onClick,
-  danger = false,
-  active = false,
-  disabled = false,
+  emoji, label, onClick,
+  danger = false, active = false, disabled = false,
 }: {
-  emoji: string
-  label: string
-  onClick: () => void
-  danger?: boolean
-  active?: boolean
-  disabled?: boolean
+  emoji: string; label: string; onClick: () => void;
+  danger?: boolean; active?: boolean; disabled?: boolean;
 }) {
   const cls =
     'w-full flex items-center gap-3 rounded-2xl px-3 py-2.5 text-[12.5px] font-bold transition active:scale-[0.98] ' +

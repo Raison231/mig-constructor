@@ -15,6 +15,8 @@ export function WalkPanel() {
   const setWalkHeight = useCinematic((s) => s.setWalkHeight)
   const walkSpeed = useCinematic((s) => s.walkSpeed)
   const setWalkSpeed = useCinematic((s) => s.setWalkSpeed)
+  const collisionsEnabled = useCinematic((s) => s.walkCollisionsEnabled)
+  const setCollisionsEnabled = useCinematic((s) => s.setWalkCollisionsEnabled)
 
   const active = mode === 'walkthrough'
 
@@ -89,6 +91,25 @@ export function WalkPanel() {
             className="w-full accent-emerald-500"
           />
         </div>
+      </div>
+
+      <div className="mt-3 pt-3 border-t border-black/10">
+        <button
+          type="button"
+          onClick={() => setCollisionsEnabled(!collisionsEnabled)}
+          className={`w-full h-8 rounded-2xl text-[11px] font-bold transition-all flex items-center justify-center gap-1.5 ${collisionsEnabled
+            ? 'bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/25'
+            : 'bg-black/5 text-black/55 hover:bg-black/10'}`}
+          title={collisionsEnabled ? 'Не проходишь сквозь стены' : 'Проходишь сквозь модули'}
+        >
+          <span className="text-sm leading-none">🧱</span>
+          <span>Коллизии: {collisionsEnabled ? 'ON' : 'OFF'}</span>
+        </button>
+        {!collisionsEnabled && (
+          <p className="mt-1.5 text-[9px] text-black/45 leading-snug text-center">
+            Без коллизий пройдёшь сквозь модули — удобно для обзора.
+          </p>
+        )}
       </div>
     </div>
   )

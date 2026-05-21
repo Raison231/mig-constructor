@@ -10,6 +10,7 @@ type CinematicState = {
 	orbitHeight: number
 	walkHeight: number
 	walkSpeed: number
+	walkCollisionsEnabled: boolean
 	recording: boolean
 	setMode: (m: CinematicMode) => void
 	setSpeed: (n: number) => void
@@ -17,6 +18,7 @@ type CinematicState = {
 	setOrbitHeight: (n: number) => void
 	setWalkHeight: (n: number) => void
 	setWalkSpeed: (n: number) => void
+	setWalkCollisionsEnabled: (v: boolean) => void
 	setRecording: (v: boolean) => void
 }
 
@@ -29,6 +31,7 @@ export const useCinematic = create<CinematicState>()(
 			orbitHeight: 6,
 			walkHeight: 1.7,
 			walkSpeed: 2.4,
+			walkCollisionsEnabled: true,
 			recording: false,
 			setMode: (mode) => set({ mode }),
 			setSpeed: (speed) => set({ speed: Math.max(0.1, Math.min(5, speed)) }),
@@ -36,6 +39,7 @@ export const useCinematic = create<CinematicState>()(
 			setOrbitHeight: (orbitHeight) => set({ orbitHeight }),
 			setWalkHeight: (walkHeight) => set({ walkHeight }),
 			setWalkSpeed: (walkSpeed) => set({ walkSpeed }),
+			setWalkCollisionsEnabled: (walkCollisionsEnabled) => set({ walkCollisionsEnabled }),
 			setRecording: (recording) => set({ recording }),
 		}),
 		{ name: 'mig-cinematic-v1' },

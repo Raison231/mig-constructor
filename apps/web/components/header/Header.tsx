@@ -23,6 +23,8 @@ import {
 } from '@/lib/migFile'
 import { exportSceneToGlb } from '@/lib/glbExport'
 import { xrStore } from '@/components/three/ARScene'
+import { HealthBadge } from './HealthBadge'
+import { AudioBadge } from './AudioBadge'
 
 const LOCALES: Locale[] = ['ru', 'en', 'ka']
 const LOCALE_LABELS: Record<Locale, string> = { ru: 'RU', en: 'EN', ka: 'KA' }
@@ -44,14 +46,10 @@ export function Header() {
   const walkActive = cinematicMode === 'walkthrough'
   const arActive = arStatus === 'active'
 
-  // One-shot capability check for immersive-ar
   useEffect(() => {
     let cancelled = false
     const nav = navigator as Navigator & { xr?: { isSessionSupported?: (mode: string) => Promise<boolean> } }
-    if (!nav.xr || !nav.xr.isSessionSupported) {
-      setArSupported(false)
-      return
-    }
+    if (!nav.xr || !nav.xr.isSessionSupported) { setArSupported(false); return }
     nav.xr.isSessionSupported('immersive-ar').then((ok) => {
       if (!cancelled) setArSupported(!!ok)
     }).catch(() => { if (!cancelled) setArSupported(false) })
@@ -79,39 +77,25 @@ export function Header() {
         app: 'mig-constructor',
         modules,
         world: {
-          hour: w.hour,
-          weather: w.weather,
-          site: w.site,
-          cameraMode: w.cameraMode,
-          dayNightAuto: w.dayNightAuto,
-          dayNightSpeed: w.dayNightSpeed,
+          hour: w.hour, weather: w.weather, site: w.site,
+          cameraMode: w.cameraMode, dayNightAuto: w.dayNightAuto, dayNightSpeed: w.dayNightSpeed,
         },
         land: {
-          widthMeters: l.widthMeters,
-          rotationDeg: l.rotationDeg,
-          offsetX: l.offsetX,
-          offsetZ: l.offsetZ,
-          lat: l.lat,
-          lon: l.lon,
-          hasImage: !!l.imageDataUrl,
-          hasHeightmap: !!l.heightmap,
-          heightmapSize: l.heightmapSize,
-          heightmapScale: l.heightmapScale,
+          widthMeters: l.widthMeters, rotationDeg: l.rotationDeg,
+          offsetX: l.offsetX, offsetZ: l.offsetZ, lat: l.lat, lon: l.lon,
+          hasImage: !!l.imageDataUrl, hasHeightmap: !!l.heightmap,
+          heightmapSize: l.heightmapSize, heightmapScale: l.heightmapScale,
         },
       }
       let landImage: Uint8Array | undefined
       let landImageMime: string | undefined
       if (l.imageDataUrl) {
         const { bytes, mime } = imageDataUrlToBytes(l.imageDataUrl)
-        landImage = bytes
-        landImageMime = mime
+        landImage = bytes; landImageMime = mime
       }
       const bundle: MigBundle = {
-        scene,
-        landImage,
-        landImageMime,
-        heightmap: l.heightmap ?? undefined,
-        customModules: customList,
+        scene, landImage, landImageMime,
+        heightmap: l.heightmap ?? undefined, customModules: customList,
       }
       const bytes = await encodeMigFile(bundle)
       await saveMigFile(bytes, `mig-scene-${Date.now()}.mig`)
@@ -127,7 +111,6 @@ export function Header() {
       const bytes = await pickMigFile()
       if (!bytes) return
       const bundle = await decodeMigFile(bytes)
-      // 1. Restore custom GLB modules BEFORE setLayout so configurator can resolve custom:* ids.
       if (bundle.customModules && bundle.customModules.length > 0) {
         const cm = useCustomModules.getState()
         for (const c of bundle.customModules) cm.add(c)
@@ -138,12 +121,8 @@ export function Header() {
       w.setWeather(bundle.scene.world.weather as Weather)
       w.setSite(bundle.scene.world.site as Site)
       w.setCameraMode(bundle.scene.world.cameraMode as CameraMode)
-      if (typeof bundle.scene.world.dayNightAuto === 'boolean') {
-        w.setDayNightAuto(bundle.scene.world.dayNightAuto)
-      }
-      if (typeof bundle.scene.world.dayNightSpeed === 'number') {
-        w.setDayNightSpeed(bundle.scene.world.dayNightSpeed)
-      }
+      if (typeof bundle.scene.world.dayNightAuto === 'boolean') w.setDayNightAuto(bundle.scene.world.dayNightAuto)
+      if (typeof bundle.scene.world.dayNightSpeed === 'number') w.setDayNightSpeed(bundle.scene.world.dayNightSpeed)
       useLand.getState().hydrateFromBundle(bundle)
       const customCount = bundle.customModules?.length ?? 0
       flash(customCount > 0 ? `📂 Загружено + ${customCount} GLB` : '📂 Загружено')
@@ -156,10 +135,7 @@ export function Header() {
   function exportGlb() {
     try {
       const scene = useThreeRef.getState().scene
-      if (!scene) {
-        flash('Сцена не готова')
-        return
-      }
+      if (!scene) { flash('Сцена не готова'); return }
       exportSceneToGlb(scene, `mig-scene-${Date.now()}.glb`)
       flash('📦 GLB экспортировано')
     } catch (e) {
@@ -174,15 +150,10 @@ export function Header() {
   }
 
   async function enterAR() {
-    if (!arSupported) {
-      flash('AR не поддерживается в этом браузере')
-      setArStatus('unsupported')
-      return
-    }
+    if (!arSupported) { flash('AR не поддерживается в этом браузере'); setArStatus('unsupported'); return }
     try {
       setArStatus('requesting')
       await xrStore.enterAR()
-      // ARScene subscribes to xrStore and will flip status → 'active' when session starts
     } catch (e) {
       console.error('[enter AR]', e)
       setArStatus('denied')
@@ -224,12 +195,14 @@ export function Header() {
         >
           🥽 {arActive ? 'AR ✖' : 'AR'}
         </button>
+        <HealthBadge />
+        <AudioBadge />
         <span className="w-px h-5 bg-hairline mx-0.5" aria-hidden />
         <button onClick={saveMig} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white transition" title="Сохранить сцену в .mig (v2)">💾 .mig</button>
         <button onClick={loadMig} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white transition" title="Открыть .mig (v1/v2)">📂 Открыть</button>
         <button onClick={exportGlb} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white transition" title="Экспорт в GLB">📦 GLB</button>
         <button onClick={share} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white transition">⤴ {t('header.share', locale)}</button>
-        <button onClick={downloadSceneScreenshot} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white transition">⎉ {t('header.screenshot', locale)}</button>
+        <button onClick={downloadSceneScreenshot} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white transition">⏉ {t('header.screenshot', locale)}</button>
         <button onClick={reset} className="glass rounded-2xl px-3.5 py-1.5 text-xs font-semibold text-brand-coral hover:bg-brand-coral hover:text-white transition">⟲ {t('header.reset', locale)}</button>
 
         <div className="ml-2 flex gap-0.5 rounded-full glass p-1">

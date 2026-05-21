@@ -15,6 +15,7 @@ import { Terrain } from './Terrain'
 import { DragControls } from './DragControls'
 import { SnapPreview } from './SnapPreview'
 import { SunSky } from './SunSky'
+import { StarsAndMoon } from './StarsAndMoon'
 import { Weather } from './Weather'
 import { SiteEnvironment } from './SiteEnvironment'
 import { CameraRig } from './CameraRig'
@@ -25,6 +26,11 @@ import { ARScene } from './ARScene'
 import { RealtimeCursors } from './RealtimeCursors'
 import { WalkthroughCamera } from './WalkthroughCamera'
 import { DroneCamera } from './DroneCamera'
+import { HealthMonitor } from './HealthMonitor'
+import { InstancedForest } from './InstancedForest'
+import { AmbientHook } from './AmbientHook'
+import { TerrainOverlay } from './TerrainOverlay'
+import { OsmBuildings } from './OsmBuildings'
 
 function SceneCapture() {
   const scene = useThree((s) => s.scene)
@@ -67,6 +73,8 @@ export function Scene() {
       onPointerMissed={() => deselect()}
     >
       <SceneCapture />
+      <HealthMonitor />
+      <AmbientHook />
       <color attach="background" args={BG_ARGS} />
 
       <ambientLight intensity={0.45} />
@@ -95,12 +103,16 @@ export function Scene() {
         <ARScene>
           <SiteEnvironment />
           <SunSky />
+          <StarsAndMoon />
+          <TerrainOverlay />
+          <InstancedForest />
           <Weather />
           {useCustomLand ? (
             hasHeightmap ? <Terrain /> : <Land />
           ) : (
             <Ground />
           )}
+          <OsmBuildings />
           <Grid
             args={GRID_ARGS}
             cellSize={1}
