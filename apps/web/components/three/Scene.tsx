@@ -15,6 +15,7 @@ import { Terrain } from './Terrain'
 import { DragControls } from './DragControls'
 import { SnapPreview } from './SnapPreview'
 import { SunSky } from './SunSky'
+import { StarsAndMoon } from './StarsAndMoon'
 import { Weather } from './Weather'
 import { SiteEnvironment } from './SiteEnvironment'
 import { CameraRig } from './CameraRig'
@@ -102,6 +103,7 @@ export function Scene() {
         <ARScene>
           <SiteEnvironment />
           <SunSky />
+          <StarsAndMoon />
           <TerrainOverlay />
           <InstancedForest />
           <Weather />
