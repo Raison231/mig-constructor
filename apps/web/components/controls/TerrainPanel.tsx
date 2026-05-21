@@ -75,7 +75,7 @@ export function TerrainPanel() {
                     type="button"
                     onClick={() => setBrushMaterial(id as TerrainMaterial)}
                     className={`relative h-10 rounded-xl border transition-all flex items-center justify-center text-base ${active ? 'border-emerald-500 ring-2 ring-emerald-500/40 scale-105' : 'border-black/15 hover:border-black/30'}`}
-                    style= background: def.color 
+                    style={{ backgroundColor: id === 'erase' ? 'transparent' : `${def.color}40` }}
                     title={def.label}
                   >
                     <span className="drop-shadow-sm">{def.emoji}</span>
