@@ -28,6 +28,7 @@ import { DroneCamera } from './DroneCamera'
 import { HealthMonitor } from './HealthMonitor'
 import { InstancedForest } from './InstancedForest'
 import { AmbientHook } from './AmbientHook'
+import { TerrainOverlay } from './TerrainOverlay'
 
 function SceneCapture() {
   const scene = useThree((s) => s.scene)
@@ -100,6 +101,7 @@ export function Scene() {
         <ARScene>
           <SiteEnvironment />
           <SunSky />
+          <TerrainOverlay />
           <InstancedForest />
           <Weather />
           {useCustomLand ? (
