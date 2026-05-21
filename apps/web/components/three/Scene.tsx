@@ -29,6 +29,7 @@ import { HealthMonitor } from './HealthMonitor'
 import { InstancedForest } from './InstancedForest'
 import { AmbientHook } from './AmbientHook'
 import { TerrainOverlay } from './TerrainOverlay'
+import { OsmBuildings } from './OsmBuildings'
 
 function SceneCapture() {
   const scene = useThree((s) => s.scene)
@@ -109,6 +110,7 @@ export function Scene() {
           ) : (
             <Ground />
           )}
+          <OsmBuildings />
           <Grid
             args={GRID_ARGS}
             cellSize={1}
