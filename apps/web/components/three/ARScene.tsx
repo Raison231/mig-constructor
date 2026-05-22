@@ -15,7 +15,14 @@ export function ARScene({ children }: { children: ReactNode }) {
 
 	useEffect(() => {
 		const unsub = xrStore.subscribe((state) => {
-			if (state.session) setStatus('active')
+			const session = state.session
+			if (!session) {
+				setStatus('idle')
+				return
+			}
+			const blendMode = (session as XRSession & { environmentBlendMode?: string }).environmentBlendMode
+			// Treat 'opaque' as VR; 'alpha-blend' / 'additive' / undefined → AR.
+			if (blendMode && blendMode !== 'opaque') setStatus('active')
 			else setStatus('idle')
 		})
 		return () => unsub()

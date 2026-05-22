@@ -32,6 +32,7 @@ import { AmbientHook } from './AmbientHook'
 import { TerrainOverlay } from './TerrainOverlay'
 import { OsmBuildings } from './OsmBuildings'
 import { ThermalHeatmap } from './ThermalHeatmap'
+import { VRPlayer } from './VRPlayer'
 
 function SceneCapture() {
   const scene = useThree((s) => s.scene)
@@ -151,6 +152,7 @@ export function Scene() {
           {!cinematicActive && <CameraRig />}
           <WalkthroughCamera />
           <DroneCamera />
+          <VRPlayer />
         </ARScene>
       </Suspense>
     </Canvas>

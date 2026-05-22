@@ -17,6 +17,7 @@ import { AudioPanel } from '@/components/controls/AudioPanel'
 import { TerrainPanel } from '@/components/controls/TerrainPanel'
 import { OsmPanel } from '@/components/controls/OsmPanel'
 import { ThermalPanel } from '@/components/controls/ThermalPanel'
+import { VRPanel } from '@/components/controls/VRPanel'
 import { CompareView } from '@/components/ui/CompareView'
 import { Header } from '@/components/header/Header'
 import { LandPanel } from '@/components/header/LandPanel'
@@ -113,6 +114,7 @@ export default function HomePage() {
               <OsmPanel />
               <ThermalPanel />
               <MoodPanel />
+              <VRPanel />
               <ProPanel />
               <TemplatesPanel />
               <CinematicPanel />
