@@ -18,13 +18,17 @@ const MATERIAL_LABELS: Record<string, { label: string; emoji: string }> = {
   hybrid: { label: 'Гибрид', emoji: '⚡' },
 }
 
-const SWATCH_STYLE: CSSProperties = {
+const SWATCH_BASE: CSSProperties = {
   display: 'inline-block',
   width: 10,
   height: 10,
   borderRadius: 999,
   marginRight: 6,
   verticalAlign: 'middle',
+}
+
+function buildSwatchStyle(watts: number): CSSProperties {
+  return Object.assign({}, SWATCH_BASE, { background: heatLossColor(watts / 50) })
 }
 
 export function ThermalPanel() {
@@ -128,10 +132,11 @@ export function ThermalPanel() {
             const w = summary.perMaterial[mat]
             if (Math.abs(w) < 1) return null
             const meta = MATERIAL_LABELS[mat]
+            const swatchStyle = buildSwatchStyle(w)
             return (
               <div key={mat} className="flex items-center justify-between text-[11px]">
                 <span className="text-ink2 inline-flex items-center">
-                  <span style= ...SWATCH_STYLE, background: heatLossColor(w / 50)  />
+                  <span style={swatchStyle} />
                   {meta.emoji} {meta.label}
                 </span>
                 <span className="font-mono text-ink">
