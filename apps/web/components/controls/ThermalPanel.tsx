@@ -24,6 +24,7 @@ const SWATCH_STYLE: CSSProperties = {
   height: 10,
   borderRadius: 999,
   marginRight: 6,
+  verticalAlign: 'middle',
 }
 
 export function ThermalPanel() {
@@ -129,7 +130,7 @@ export function ThermalPanel() {
             const meta = MATERIAL_LABELS[mat]
             return (
               <div key={mat} className="flex items-center justify-between text-[11px]">
-                <span className="text-ink2">
+                <span className="text-ink2 inline-flex items-center">
                   <span style= ...SWATCH_STYLE, background: heatLossColor(w / 50)  />
                   {meta.emoji} {meta.label}
                 </span>
