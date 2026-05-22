@@ -22,6 +22,7 @@ import { Header } from '@/components/header/Header'
 import { LandPanel } from '@/components/header/LandPanel'
 import { CopilotPanel } from '@/components/header/CopilotPanel'
 import { PresetsPanel } from '@/components/header/PresetsPanel'
+import { MoodPanel } from '@/components/header/MoodPanel'
 import { CustomModulesPanel } from '@/components/header/CustomModulesPanel'
 import { MobileTopBar } from '@/components/mobile/MobileTopBar'
 import { MobileTabBar } from '@/components/mobile/MobileTabBar'
@@ -111,6 +112,7 @@ export default function HomePage() {
               <TerrainPanel />
               <OsmPanel />
               <ThermalPanel />
+              <MoodPanel />
               <ProPanel />
               <TemplatesPanel />
               <CinematicPanel />
