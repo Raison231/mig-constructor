@@ -31,6 +31,7 @@ import { InstancedForest } from './InstancedForest'
 import { AmbientHook } from './AmbientHook'
 import { TerrainOverlay } from './TerrainOverlay'
 import { OsmBuildings } from './OsmBuildings'
+import { ThermalHeatmap } from './ThermalHeatmap'
 
 function SceneCapture() {
   const scene = useThree((s) => s.scene)
@@ -105,6 +106,7 @@ export function Scene() {
           <SunSky />
           <StarsAndMoon />
           <TerrainOverlay />
+          <ThermalHeatmap />
           <InstancedForest />
           <Weather />
           {useCustomLand ? (
